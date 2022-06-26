@@ -3,7 +3,7 @@ import {
     AspectRatio,
     Box, Button,
     Center,
-    Circle, Divider,
+    Circle, Container, Divider,
     Flex,
     Heading,
     HStack, IconButton,
@@ -15,9 +15,11 @@ import {
 } from "@chakra-ui/react";
 import Slider from 'react-slick';
 import {AddIcon, CheckIcon, MinusIcon, PhoneIcon, StarIcon} from "@chakra-ui/icons";
-import {AiOutlineHeart, BsSubtract} from "react-icons/all";
+import {AiOutlineHeart, AiOutlineShoppingCart, BsSubtract} from "react-icons/all";
 import {useParams} from "react-router-dom";
 import productService from "../../../service/product.service";
+import {store} from "../../../index";
+import {shoppingCartAction} from "../../../actions/shoppingCartAction";
 
 const setting = {
     // dots: true,
@@ -43,9 +45,7 @@ const ProductDetailPage = () => {
     const [defaultVariants, setDefaultVariants] = useState([]);
     const [selectedModelNames, setSelectedModelNames] = useState([]);
     const [isLoading, setLoading] = useState(false);
-    const [availableStock, setAvailableStock] = useState(0);
-
-    const [displayImg, setDisplayImg] = useState({});
+    const [feedbacks, setFeedbacks] = useState([]);
 
     const initPurchaseQuantity = {
         maxPurchaseQuantity: '',
@@ -55,6 +55,8 @@ const ProductDetailPage = () => {
         productId: productId,
         shopId: shopId,
         stock: '',
+        modelName: '',
+
     }
     const [purchaseQuantity, setPurchaseQuantity] = useState(initPurchaseQuantity);
     useEffect(async () => {
@@ -64,11 +66,12 @@ const ProductDetailPage = () => {
         await getProductDetail();
     }, []);
 
+    //gewt product detail
     const getProductDetail = async () => {
-        console.log('get product detail')
         try {
             const resp = await productService.getProductDetail(productId);
             let productDetail = resp.data;
+            console.log('product detail', productDetail)
             setProductDetail(productDetail);
             setDefaultVariants(productDetail.variants || []);
             console.log(productDetail);
@@ -78,17 +81,43 @@ const ProductDetailPage = () => {
         setLoading(false);
     }
 
+    const getProductFeedbacks = async () => {
+        console.log('get product feedbacks');
+        let data = await productService.getProductFeedbacks(productId);
+        console.log(data);
+    }
+
+    //add product to cart
+    const addProductToCart = () => {
+        let qty = selectProduct.qty;
+        if (productDetail.models.length > 0) {
+            let maxQty = purchaseQuantity.maxPurchaseQuantity;
+            if (qty <= 0 || qty > maxQty || !purchaseQuantity.modelId) {
+                return;
+            }
+            console.log('purchase quantity', purchaseQuantity);
+            shoppingCartAction.addItem({...purchaseQuantity, name: productDetail.name, id: productDetail.id}, qty);
+        } else {
+            shoppingCartAction.addItem({...productDetail, id: productDetail.id}, qty);
+        }
+
+    }
+
     //get_purchase_quantities_for_selected_model
     const getModelByVariantOption = async (names) => {
         if (names.length === defaultVariants.length) {
             let modelName = '';
             for (let i = 0; i < names.length; i++) {
-                modelName += names[i];
+                if (i >= 0 && i != (names.length - 1)) {
+                    modelName += names[i] + ',';
+                } else {
+                    modelName += names[i];
+                }
             }
+            //
             for (let i = 0; i < productDetail.models.length; i++) {
                 let model = productDetail.models[i];
                 if (modelName.toLowerCase() === model.name.toLowerCase()) {
-                    //gui len server
                     try {
                         const resp = await productService.getPurchaseQuantity(shopId, productId, model.id, selectProduct.qty);
                         const data = resp.data;
@@ -99,18 +128,26 @@ const ProductDetailPage = () => {
                             price: data.price,
                             priceBeforeDiscount: data.priceBeforeDiscount,
                             stock: data.stock,
+                            modelName: data.modelName
                         }))
+                        console.log('purchase quantity', data);
+                        return;
                     } catch (e) {
-                        setPurchaseQuantity(initPurchaseQuantity);
-                        console.log("FAiled to get quantity")
+                        setPurchaseQuantity(prevState => ({
+                            ...purchaseQuantity,
+                            stock: 0,
+                        }))
                     }
                 } else {
                     setPurchaseQuantity(initPurchaseQuantity);
-
                 }
             }
         }
     }
+
+    useEffect(() => {
+        getProductFeedbacks();
+    }, []);
 
 
     return (
@@ -202,21 +239,39 @@ const ProductDetailPage = () => {
                                 <InputGroup>
                                     <InputLeftAddon
                                         onClick={() => {
-                                            setSelectProduct((prevState => (
-                                                {
-                                                    ...prevState,
-                                                    qty: prevState.qty >= 2 ? prevState.qty - 1 : 0
+                                            // setSelectProduct((prevState => (
+                                            //     {
+                                            //         ...prevState,
+                                            //         qty: prevState.qty >= 2 ? prevState.qty - 1 : 0
+                                            //     }
+                                            // )))
+                                            if (productDetail.models > 0) {
+                                                if (!purchaseQuantity.stock && purchaseQuantity.stock == 0) {
+                                                    return;
                                                 }
-                                            )))
+                                                setSelectProduct((prevState => (
+                                                    {
+                                                        ...prevState,
+                                                        qty: prevState.qty < purchaseQuantity.stock ? (prevState.qty + 1) : prevState.qty
+                                                    }
+                                                )))
+                                            } else {
+                                                setSelectProduct((prevState => (
+                                                    {
+                                                        ...prevState,
+                                                        qty: prevState.qty >= 2 ? prevState.qty - 1 : 0
+                                                    }
+                                                )))
+                                            }
                                         }}
                                         cursor={'pointer'} children={<MinusIcon/>}
                                     />
                                     <Input
                                         onChange={(e) => {
-                                            if (!purchaseQuantity.stock && purchaseQuantity.stock == 0) {
-                                                return;
-                                            }
-                                            if (e.target.value >= 1) {
+                                            // if (productDetail.models.length === 0 || (!purchaseQuantity.stock && purchaseQuantity.stock == 0)) {
+                                            //     return;
+                                            // }
+                                            if (parseInt(e.target.value) >= 1) {
                                                 setSelectProduct((prevState => (
                                                     {
                                                         ...prevState,
@@ -229,15 +284,26 @@ const ProductDetailPage = () => {
                                         value={selectProduct.qty} type='number'/>
                                     <InputRightAddon
                                         onClick={() => {
-                                            if (!purchaseQuantity.stock && purchaseQuantity.stock == 0) {
-                                                return;
-                                            }
-                                            setSelectProduct((prevState => (
-                                                {
-                                                    ...prevState,
-                                                    qty: prevState.qty < purchaseQuantity.stock ? (prevState.qty + 1) : prevState.qty
+                                            if (productDetail.models > 0) {
+                                                if (!purchaseQuantity.stock && purchaseQuantity.stock == 0) {
+                                                    return;
                                                 }
-                                            )))
+                                                setSelectProduct((prevState => (
+                                                    {
+                                                        ...prevState,
+                                                        qty: prevState.qty < purchaseQuantity.stock ? (prevState.qty + 1) : prevState.qty
+                                                    }
+                                                )))
+                                            } else {
+                                                setSelectProduct((prevState => (
+                                                    {
+                                                        ...prevState,
+                                                        qty: prevState.qty + 1,
+                                                        // qty: prevState.qty < purchaseQuantity.stock ? (prevState.qty + 1) : prevState.qty
+                                                    }
+                                                )))
+                                            }
+
                                         }}
                                         cursor={'pointer'} children={<AddIcon/>}
                                     />
@@ -251,6 +317,19 @@ const ProductDetailPage = () => {
                             </Button>
                         </Flex>
                         {/*END OF QUANTITY*/}
+
+                        {/*BUTTON ADD TO CART*/}
+                        <Flex>
+                            <Button
+                                onClick={() => addProductToCart()}
+                                colorScheme={'blue'}
+                                variant={'solid'}
+                                aria-label={''} rightIcon={<AiOutlineShoppingCart/>}>
+                                Add to cart
+                            </Button>
+                        </Flex>
+                        {/*END OF BUTTON ADD TO CART*/}
+
                         {/*DESCRIPTION*/}
                         <Divider/>
                         {/*END OF DESCRIPTION*/}

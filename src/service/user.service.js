@@ -7,18 +7,12 @@ const login = async (email, password) => {
             email: email,
             password: password
         })
-
         return data;
     } catch (e) {
         throw new Error("Failed to login");
     }
 }
 
-const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-}
 
 const getCurrentUserDetail = async () => {
     const url = `/api/v1/member/users/me`;
@@ -27,6 +21,7 @@ const getCurrentUserDetail = async () => {
             "Authorization": `Bearer ${localStorage.getItem('access_token')}`
         }
     })
+
     return data;
 }
 
@@ -55,11 +50,61 @@ const verificationAccount = async (code) => {
     return resp;
 }
 
+const getAddresses = async () => {
+    console.log('get addresses');
+    const url = '/api/v1/member/users/me/addresses';
+    const resp = await axiosClient.get(url, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type":
+                "application/json",
+        }
+    });
+    return resp;
+
+}
+const saveAddress = async (address) => {
+    const url = '/api/v1/member/users/me/addresses';
+    try {
+        const resp = await axiosClient.post(url, {...address}, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                "Content-Type":
+                    "application/json",
+            }
+        });
+        const data = await resp.data;
+        return data;
+    } catch (e) {
+        console.log('Failed to save address ', e);
+    }
+}
+
+const placeOrder = async (placeOrderData) => {
+    console.log('place order...');
+    const url = "/api/v1/member/orders";
+    try {
+        const resp = axiosClient.post(url, {...placeOrderData}, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                "Content-Type":
+                    "application/json",
+            }
+        })
+        const data = await resp.data;
+        return data;
+    } catch (e) {
+        console.log(e);
+        throw 'Failed to place order';
+    }
+}
 
 export default {
-    logout,
     login,
     getCurrentUserDetail,
     registration,
-    verificationAccount
+    verificationAccount,
+    getAddresses,
+    saveAddress,
+    placeOrder
 }

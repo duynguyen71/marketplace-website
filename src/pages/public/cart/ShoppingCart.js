@@ -1,10 +1,22 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Box, Flex, Heading, HStack, Link, Stack} from "@chakra-ui/react";
 import {cartData} from "../../../data/cartData";
 import {CartItem} from "../../../components/Public/CartItem";
 import {CartOrderSummary} from "../../../components/Public/CardOrderSummary";
+import {useDispatch, useSelector} from "react-redux";
+import {store} from "../../../index";
+import {shoppingCartAction} from "../../../actions/shoppingCartAction";
+import {useHistory} from "react-router-dom";
 
 const ShoppingCart = () => {
+
+    const history = useHistory();
+    const cartItems = useSelector((state => state.shoppingCartReducer));
+    useEffect(() => {
+        console.log('shopping items', cartItems);
+    }, []);
+
+
     return (
         <>
             <Box
@@ -43,11 +55,11 @@ const ShoppingCart = () => {
                         flex="2"
                     >
                         <Heading fontSize="2xl" fontWeight="extrabold">
-                            Shopping Cart (3 items)
+                            Shopping Cart ({cartItems.length} items)
                         </Heading>
 
                         <Stack spacing="6">
-                            {cartData.map((item) => (
+                            {cartItems.map((item) => (
                                 <CartItem key={item.id} {...item} />
                             ))}
                         </Stack>
@@ -57,7 +69,7 @@ const ShoppingCart = () => {
                         <CartOrderSummary/>
                         <HStack mt="6" fontWeight="semibold">
                             <p>or</p>
-                            <Link color={'blue.500'}>Continue shopping</Link>
+                            <Link onClick={() => history.replace('/')} color={'blue.500'}>Continue shopping</Link>
                         </HStack>
                     </Flex>
                 </Stack>

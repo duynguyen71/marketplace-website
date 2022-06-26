@@ -2,7 +2,7 @@ import {userConstants} from "../constants/userConstants";
 
 let user = JSON.parse(localStorage.getItem('user'));
 
-const initialState = user ? {loggedIn: true, user} : {};
+const initialState = user ? {loggedIn: true, loggingIn: true, user: user} : {loggedIn: false, loggingIn: false,};
 
 const authenticateReducer = (state = initialState, action) => {
 
@@ -17,7 +17,7 @@ const authenticateReducer = (state = initialState, action) => {
         case userConstants.LOGIN_SUCCESS: {
             return {
                 loggedIn: true,
-                loggingIn: false,
+                loggingIn: true,
                 user: user
             }
         }
@@ -31,16 +31,17 @@ const authenticateReducer = (state = initialState, action) => {
             return {
                 loggedIn: false,
                 loggingIn: false,
-
             };
         case  userConstants.GET_USER_DETAIL_SUCCESS: {
+            console.log(user);
             return {
                 loggedIn: true,
+                loggingIn: true,
                 user: user
             }
         }
         default:
-            return state;
+            return initialState;
     }
 }
 export default authenticateReducer;

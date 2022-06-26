@@ -2,6 +2,8 @@ import {Button, Flex, Heading, Link, Stack, Text, useColorModeValue} from '@chak
 import {FaArrowRight} from 'react-icons/fa'
 import {formatPrice} from "./PriceTag";
 import {useHistory} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useSelector} from "react-redux";
 
 const OrderSummaryItem = (props) => {
     const {label, value, children} = props
@@ -17,12 +19,23 @@ const OrderSummaryItem = (props) => {
 
 export const CartOrderSummary = () => {
     const history = useHistory();
+    const cartItems = useSelector(state => state.shoppingCartReducer);
+    const [totalPrice, setTotalPrice] = useState();
+
+    useEffect(() => {
+        calcTotalPrice();
+    }, [cartItems]);
+
+    //calc total price
+    const calcTotalPrice = () => {
+        const totalPrice = cartItems.reduce((sum, {price, qty}) => sum + price * qty, 0);
+        setTotalPrice(totalPrice);
+    }
     return (
         <Stack spacing="8" borderWidth="1px" rounded="lg" padding="8" width="full">
             <Heading size="md">Order Summary</Heading>
-
             <Stack spacing="6">
-                <OrderSummaryItem label="Subtotal" value={formatPrice(597)}/>
+                <OrderSummaryItem label="Subtotal" value={formatPrice(totalPrice)}/>
                 <OrderSummaryItem label="Shipping + Tax">
                     <Link href="#" textDecor="underline">
                         Calculate shipping
@@ -38,7 +51,7 @@ export const CartOrderSummary = () => {
                         Total
                     </Text>
                     <Text fontSize="xl" fontWeight="extrabold">
-                        {formatPrice(597)}
+                        {formatPrice(totalPrice)}
                     </Text>
                 </Flex>
             </Stack>

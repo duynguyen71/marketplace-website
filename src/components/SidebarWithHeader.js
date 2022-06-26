@@ -47,12 +47,12 @@ const LinkItems = [
 
 export default function SidebarWithHeader({children}) {
     const {isOpen, onOpen, onClose} = useDisclosure();
-    const authReducer = useSelector((s) => s.authenticateReducer);
+    const {user} = useSelector((state) => state.authenticateReducer);
     return (
         <>
             <Flex zIndex={999} bg={'grey.100'} w={'100%'} minH={'100vh'}>
                 <Sidebar w={'100%'}/>
-                <MobileNav user={authReducer.user} onOpen={onOpen} children={children}/>
+                <MobileNav user={user} onOpen={onOpen} children={children}/>
             </Flex>
         </>
     );
@@ -60,7 +60,6 @@ export default function SidebarWithHeader({children}) {
 
 
 const MobileNav = ({onOpen, children, user, ...rest}) => {
-    const dispatch = useDispatch();
     const history = useHistory();
     return (
         <Flex direction={'column'} w={'100%'}>

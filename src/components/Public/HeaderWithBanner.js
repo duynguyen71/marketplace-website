@@ -18,15 +18,15 @@ import history from '../../helper/history';
 import {store} from "../../index";
 import {authAction} from "../../actions/auth.action";
 import {useSelector} from "react-redux";
+import {shoppingCartAction} from "../../actions/shoppingCartAction";
 
 const HeaderWithBanner = () => {
     const [banner, setBanner] = useState(true);
-
-    useEffect(() => {
-
-    }, [])
-
     const {loggedIn} = useSelector(state => state.authenticateReducer);
+
+
+    const cart = useSelector(state => state.shoppingCartReducer);
+
 
     return (
         <>
@@ -67,7 +67,8 @@ const HeaderWithBanner = () => {
                                 cursor={'pointer'}
                                 onClick={() => {
                                     authAction.logout();
-                                    history.push('/login')
+                                    shoppingCartAction.clearCart();
+                                    history.push('/login');
                                 }}>{loggedIn ? "Log out" : "Log in"}</Text>
                             {
                                 !loggedIn && <Text cursor={'pointer'} onClick={() => history.push('/register')
@@ -103,6 +104,7 @@ const HeaderWithBanner = () => {
                         {/*<IconButton colorScheme={'white'} bg={'transparent'} aria-label='Search database'*/}
                         {/*            icon={<AiOutlineShoppingCart size={'md'}/>}/>*/}
 
+                        {/*SHOPPING CART ITEM COUNT*/}
                         <Box
                             onClick={() => history.push("/cart")}
                             align={'center'} position={'relative'}>
@@ -119,7 +121,8 @@ const HeaderWithBanner = () => {
                                     align={'center'}
                                     justifySelf={'center'}
                                     justifyContent={'center'} alignItems={'center'} alignSelf={'center'}
-                                    alignItems={'center'} textAlign={'center'} justifyItems={'center'}>1</Text>
+                                    alignItems={'center'} textAlign={'center'}
+                                    justifyItems={'center'}>{cart != null ? cart.length : 0}</Text>
                             </Box>
                         </Box>
                     </Flex>

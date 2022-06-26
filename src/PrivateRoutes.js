@@ -4,26 +4,12 @@ import {authAction} from "./actions/auth.action";
 
 const PrivateRoutes = ({children, ...rest}) => {
     const history = useHistory();
-    useEffect(async () => {
-        try {
-
-            await authAction.getUserDetail();
-        } catch (e) {
-            authAction.logout();
-            history.push('/login')
-            return;
-        }
-    }, []);
-
     return (
         <Route {...rest}
-
                render={() => {
-                   if (localStorage.getItem('access_token')) {
+                   if (localStorage.getItem('access_token') && localStorage.getItem('user')) {
                        return children;
                    } else {
-                       console.log('redurec login')
-                       // setDirectUrl('/admin');
                        return <Redirect to="/login"/>;
                    }
                }}

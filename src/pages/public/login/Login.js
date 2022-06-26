@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import {useState} from "react";
 import {authAction} from "../../../actions/auth.action";
-import { useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import history from "../../../helper/history";
 
 export default function Login() {
@@ -22,8 +22,6 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(true);
     const [error, setError] = useState('');
-
-    const {loggedIn, loggingIn} = useSelector(state => state.authenticateReducer);
 
 
     const handleLogin = async (e) => {
@@ -39,15 +37,15 @@ export default function Login() {
         }
         try {
             await authAction.login(username, password);
+            history.replace('/')
+            window.location.reload();
         } catch (e) {
             setError('Username or password is not correct!');
             console.log('LOGIN PAGRE :' + e);
         }
 
     }
-    if (loggedIn) {
-        history.push('/')
-    }
+
     return (
         <Flex
             minH={"100vh"}

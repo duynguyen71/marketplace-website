@@ -2,7 +2,7 @@ import {Box, HStack, Icon, Image, Link, Stack, Text, useColorModeValue as mode} 
 import {FiGift} from 'react-icons/fi'
 
 export const CartProductMeta = (props) => {
-    const {isGiftWrapping = true, image, name, description} = props
+    const {isGiftWrapping = true, image, name, description, modelName} = props
     return (
         <Stack direction="row" spacing="5" width="full">
             <Image
@@ -19,17 +19,17 @@ export const CartProductMeta = (props) => {
                 <Stack spacing="0.5">
                     <Text fontWeight="medium">{name}</Text>
                     <Text color={mode('gray.600', 'gray.400')} fontSize="sm">
-                        {description}
+                        {modelName}
                     </Text>
                 </Stack>
-                {isGiftWrapping && (
-                    <HStack spacing="1" mt="3" color={mode('gray.600', 'gray.400')}>
-                        <Icon as={FiGift} boxSize="4"/>
-                        <Link fontSize="sm" textDecoration="underline">
-                            Add gift wrapping
-                        </Link>
-                    </HStack>
-                )}
+                {/*{isGiftWrapping && (*/}
+                {/*    <HStack spacing="1" mt="3" color={mode('gray.600', 'gray.400')}>*/}
+                {/*        <Icon as={FiGift} boxSize="4"/>*/}
+                {/*        <Link fontSize="sm" textDecoration="underline">*/}
+                {/*            Add gift wrapping*/}
+                {/*        </Link>*/}
+                {/*    </HStack>*/}
+                {/*)}*/}
             </Box>
         </Stack>
     )

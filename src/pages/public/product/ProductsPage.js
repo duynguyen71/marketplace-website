@@ -51,6 +51,7 @@ const ProductsPage = () => {
     useEffect(async () => {
         if (category) {
             document.title = category;
+            console.log('try get products');
             const resp = await productService.getProductsByCategory(category);
             setProducts(resp.data);
             console.log(resp.data);
@@ -96,48 +97,49 @@ const ProductsPage = () => {
                     <Box w={'100%'} alignItems={'start'}>
                         <Flex w={'100%'} alignItems={'start'}>
                             {/*FILTERS*/}
-                            <Flex borderRadius={'md'} w={'100%'} bg={'red'} direction={'column'} p={4} flex={2}
-                                  bg={'gray.100'}>
-                                {/*CATEGORY FILTER*/}
-                                <Box w={'100%'}>
-                                    <Text mb={2} color={'gray.700'} fontSize={'20px'}>Category</Text>
-                                    <VStack w={'100&'} spacing={1} align={'start'}>
-                                        <CheckboxGroup size={'md'} colorScheme={'green'} borderColor={'white'}>
-                                            {
-                                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((item, i) => (
-                                                    <Checkbox borderColor={'gray.600'} key={i}>
-                                                        Category
-                                                    </Checkbox>
-                                                ))
-                                            }
-                                        </CheckboxGroup>
+                            <Box
+                                w={'100%'} bg={'white'} flex={2} p={4}
+                                mr={5}
+                            >
+                                <Flex borderRadius={'md'} w={'100%'} direction={'column'}>
+                                    {/*CATEGORY FILTER*/}
+                                    <Box w={'100%'}>
+                                        <Text mb={2} color={'gray.700'} fontSize={'20px'}>Category</Text>
+                                        <VStack w={'100&'} spacing={1} align={'start'}>
+                                            <CheckboxGroup size={'md'} colorScheme={'green'} borderColor={'white'}>
+                                                {
+                                                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((item, i) => (
+                                                        <Checkbox borderColor={'gray.600'} key={i}>
+                                                            Category
+                                                        </Checkbox>
+                                                    ))
+                                                }
+                                            </CheckboxGroup>
+                                        </VStack>
+                                    </Box>
+                                    {/*PRICE FILTER*/}
+                                    <Divider my={5}/>
+                                    <VStack w={'100%'} align={'start'}>
+                                        <Text>Price $</Text>
+                                        <Flex w={'100%'} justifyContent={'space-between'}>
+                                            <Text fontSize={14} color={'gray.800'}>100</Text>
+                                            <Text fontSize={14} color={'gray.800'}>100</Text>
+                                        </Flex>
+                                        <RangeSlider
+                                            colorScheme={'teal'}
+                                            defaultValue={[120, 240]} min={0} max={300} step={10}>
+                                            <RangeSliderTrack bg='red.100'>
+                                                <RangeSliderFilledTrack bg='tomato'/>
+                                            </RangeSliderTrack>
+                                            <RangeSliderThumb boxSize={4} index={0}/>
+                                            <RangeSliderThumb boxSize={4} index={1}/>
+                                        </RangeSlider>
                                     </VStack>
-                                </Box>
-                                {/*PRICE FILTER*/}
-                                <Divider my={5}/>
-                                <VStack w={'100%'} align={'start'}>
-                                    <Text>Price $</Text>
-                                    <Flex w={'100%'} justifyContent={'space-between'}>
-                                        <Text fontSize={14} color={'gray.800'}>100</Text>
-                                        <Text fontSize={14} color={'gray.800'}>100</Text>
-                                    </Flex>
-                                    <RangeSlider
-                                        colorScheme={'teal'}
-                                        defaultValue={[120, 240]} min={0} max={300} step={10}>
-                                        <RangeSliderTrack bg='red.100'>
-                                            <RangeSliderFilledTrack bg='tomato'/>
-                                        </RangeSliderTrack>
-                                        <RangeSliderThumb boxSize={4} index={0}/>
-                                        <RangeSliderThumb boxSize={4} index={1}/>
-                                    </RangeSlider>
-                                </VStack>
-
-
-                            </Flex>
-
-
+                                </Flex>
+                            </Box>
                             {/*END OF FILTERS*/}
-                            <Box bg={'gray.100'} p={2} flex={10} minH={'100vh'}>
+                            {/*PRODUCTS*/}
+                            <Box borderRadius={'10px'} bg={'white'} p={5} flex={10} minH={'100vh'}>
                                 <SimpleGrid minChildWidth='200px' spacing='20px'>
                                     {
                                         products && products.map((product, i) => (
@@ -146,20 +148,17 @@ const ProductsPage = () => {
                                     }
                                 </SimpleGrid>
                             </Box>
+                            {/*    END OF PRODUCRS*/}
                         </Flex>
                     </Box>
                     {/*MAIN*/}
 
 
-                    {/*END OF BRAND*/}
-                    {/*END OF BRAND*/}
-                    {/*END OF BRAND*/}
-
-
                 </Box>
             </Box>
         </>
-    );
+    )
+        ;
 };
 
 export default ProductsPage;

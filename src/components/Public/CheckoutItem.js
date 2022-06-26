@@ -10,8 +10,10 @@ import {
     Text,
     VStack
 } from "@chakra-ui/react";
+import {store} from "../../index";
+import {shoppingCartAction} from "../../actions/shoppingCartAction";
 
-const CheckoutItem = () => {
+const CheckoutItem = (props) => {
     return (
         <>
             <Flex justifyContent={'space-between'} alignItems={'center'} w={'100%'}>
@@ -28,19 +30,27 @@ const CheckoutItem = () => {
                             fontSize={20}
                             textColor={
                                 'gray.600'
-                            } fontWeight={'medium'}>Watch</Text>
+                            } fontWeight={'medium'}>{props.name || ''}</Text>
                         <Text fontSize={15} color={'grey'}>Size : 20</Text>
-                        <Text fontSize={15} textColor={'gray.600'}>Size : 20</Text>
+                        {/*<Text fontSize={15} textColor={'gray.600'}>Size : 20</Text>*/}
                     </VStack>
                 </HStack>
-                <NumberInput maxW={20} step={1} defaultValue={1} min={1} max={100}>
+                <NumberInput
+                    onChange={(e) => {
+                        shoppingCartAction.updateCartItemQty(props.id, parseInt(e));
+                    }}
+                    maxW={20}
+                    step={1}
+                    defaultValue={props.qty}
+                    min={1}
+                    max={100}>
                     <NumberInputField/>
                     <NumberInputStepper>
                         <NumberIncrementStepper/>
                         <NumberDecrementStepper/>
                     </NumberInputStepper>
                 </NumberInput>
-                <Text textColor={'gray.700'} fontWeight={'medium'} fontSize={'x-large'}>120$</Text>
+                <Text textColor={'gray.700'} fontWeight={'medium'} fontSize={'x-large'}>{props.price * props.qty}</Text>
             </Flex>
         </>
     );

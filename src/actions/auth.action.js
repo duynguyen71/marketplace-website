@@ -32,21 +32,24 @@ const login = async (email, password) => {
     }
 }
 const logout = () => {
+    localStorage.clear();
     store.dispatch({
         type: userConstants.LOGOUT
     })
-    userService.logout();
-
 }
 
 const getUserDetail = async () => {
-    if(localStorage.getItem('access_token')){
+    if (localStorage.getItem('access_token')) {
+        console.log('get user detail===');
         let resp = await userService.getCurrentUserDetail();
-        localStorage.setItem('user', JSON.stringify(resp.data));
+        const data = await resp.data;
+        localStorage.setItem('user', JSON.stringify(data));
         store.dispatch({
             type: userConstants.GET_USER_DETAIL_SUCCESS,
-            user: resp.data
-        })
+            user: data
+        });
+    } else {
+        throw 'Failed get user detail';
     }
 
 }

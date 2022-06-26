@@ -15,7 +15,11 @@ axiosClient.interceptors.request.use(function (config) {
 axiosClient.interceptors.response.use(function (response) {
     return response.data;
 }, function (error) {
+    if (error.response) {
+        return Promise.reject(error.response.data);
+    }
     return Promise.reject(error);
+
 });
 
 
