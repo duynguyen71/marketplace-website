@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Box, Flex, Heading, HStack, Link, Stack} from "@chakra-ui/react";
+import {Box, Flex, Heading, HStack, Link, Stack, Text} from "@chakra-ui/react";
 import {cartData} from "../../../data/cartData";
 import {CartItem} from "../../../components/Public/CartItem";
 import {CartOrderSummary} from "../../../components/Public/CardOrderSummary";
@@ -68,7 +68,7 @@ const ShoppingCart = () => {
                     <Flex direction="column" align="center" flex="1">
                         <CartOrderSummary/>
                         <HStack mt="6" fontWeight="semibold">
-                            <p>or</p>
+                            <Text>or</Text>
                             <Link onClick={() => history.replace('/')} color={'blue.500'}>Continue shopping</Link>
                         </HStack>
                     </Flex>

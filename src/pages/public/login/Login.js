@@ -16,13 +16,17 @@ import {useState} from "react";
 import {authAction} from "../../../actions/auth.action";
 import {useSelector} from "react-redux";
 import history from "../../../helper/history";
+import applicationReducer from "../../../reducers/app.reducer";
+import {store} from "../../../index";
+import {applicationAction} from "../../../actions/applicationAction";
 
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(true);
     const [error, setError] = useState('');
-
+    //get redirect url
+    const {redirectUrl} = useSelector(state => state.applicationReducer);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -37,11 +41,17 @@ export default function Login() {
         }
         try {
             await authAction.login(username, password);
-            history.replace('/')
-            window.location.reload();
+            if (redirectUrl) {
+                history.replace(redirectUrl);
+                applicationAction.clearRedirectPath();
+                return;
+            } else {
+                history.replace('/');
+            }
+            return;
         } catch (e) {
+            console.log(e);
             setError('Username or password is not correct!');
-            console.log('LOGIN PAGRE :' + e);
         }
 
     }

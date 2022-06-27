@@ -57,20 +57,34 @@ const Sidebar = () => {
                     path: '/dashboard/products'
                 },
                 {
-                    title: 'All Products',
-                    path: '/dashboard/products'
+                    title: 'New Products',
+                    path: '/dashboard/product-new/category'
                 },
                 {
                     title: 'All Products',
                     path: '/dashboard/products'
                 },
-                {
-                    title: 'All Products',
-                    path: '/dashboard/products'
-                }
+
             ]
         },
-        {icon: FiCalendar, title: "Calendar", description: "This is the description for the dashboard.", active: false},
+        {
+            icon: FiCalendar, title: "Order", description: "This is the description for the dashboard.", active: false,
+            children: [
+                {
+                    title: 'All Products',
+                    path: '/dashboard/products'
+                },
+                {
+                    title: 'New Products',
+                    path: '/dashboard/product-new/category'
+                },
+                {
+                    title: 'All Products',
+                    path: '/dashboard/products'
+                },
+
+            ]
+        },
         {icon: FiUser, title: "Clients", description: "This is the description for the dashboard.", active: false},
         {
             icon: IoPawOutline,
@@ -92,13 +106,8 @@ const Sidebar = () => {
             bg={'white'}
             bgColor={'white'}
             pos="sticky"
-            // left="5"
             h="100vh"
-
-            // maxH={'100vh'}
-            // marginTop="2.5vh"
             boxShadow="0 4px 12px 0 rgba(0, 0, 0, 0.05)"
-            // borderRadius={navSize === "small" ? "15px" : "30px"}
             w={navSize === "small" ? "75px" : "200px"}
             flexDir="column"
             justifyContent="space-between"
@@ -136,17 +145,6 @@ const Sidebar = () => {
                     }}
                 />
 
-                {/*<NavItem*/}
-                {/*    active*/}
-                {/*    navSize={navSize} icon={FiHome} title="Dashboard"*/}
-                {/*    description="This is the description for the dashboard."/>*/}
-                {/*<NavItem*/}
-                {/*    navSize={navSize} icon={FiCalendar} title="Calendar"/>*/}
-                {/*<NavItem navSize={navSize} icon={FiUser} title="Clients"/>*/}
-                {/*<NavItem navSize={navSize} icon={IoPawOutline} title="Animals"/>*/}
-                {/*<NavItem navSize={navSize} icon={FiDollarSign} title="Stocks"/>*/}
-                {/*<NavItem navSize={navSize} icon={FiBriefcase} title="Reports"/>*/}
-                {/*<NavItem navSize={navSize} icon={FiSettings} title="Settings"/>*/}
                 {
                     navItems.map((item, i) => (
                         <NavItem

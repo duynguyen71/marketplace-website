@@ -12,6 +12,9 @@ import VerificationPage from "./pages/public/verification/VerificationPage";
 import {useEffect} from "react";
 import userService from './service/user.service';
 import {authAction} from "./actions/auth.action";
+import PrivateMemberRoute from "./PrivateMemberRoute";
+import Purchase from "./pages/member/purchase/Purchase";
+import MemberRoutes from "./pages/member/MemberRoutes";
 
 function App() {
 
@@ -27,6 +30,9 @@ function App() {
                 <PrivateRoutes path='/dashboard'>
                     <Dashboard/>
                 </PrivateRoutes>
+                <PrivateMemberRoute path='/user'>
+                    <MemberRoutes/>
+                </PrivateMemberRoute>
                 <Route path='/login' component={Login}/>
                 <Route path='/verification' component={VerificationPage}/>
                 <Route path='/register' component={Register}/>

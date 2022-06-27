@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {
-    AspectRatio,
+    AspectRatio, Avatar,
     Box, Button,
     Center,
     Circle, Container, Divider,
-    Flex,
+    Flex, FormControl, FormHelperText, FormLabel,
     Heading,
     HStack, IconButton,
     Image, Input, InputGroup, InputLeftAddon, InputRightAddon, Skeleton,
@@ -20,6 +20,8 @@ import {useParams} from "react-router-dom";
 import productService from "../../../service/product.service";
 import {store} from "../../../index";
 import {shoppingCartAction} from "../../../actions/shoppingCartAction";
+import RatingStarts from "../../../components/RatingStarts";
+import userService from '../../../service/user.service';
 
 const setting = {
     // dots: true,
@@ -45,8 +47,13 @@ const ProductDetailPage = () => {
     const [defaultVariants, setDefaultVariants] = useState([]);
     const [selectedModelNames, setSelectedModelNames] = useState([]);
     const [isLoading, setLoading] = useState(false);
-    const [feedbacks, setFeedbacks] = useState([]);
 
+    const [feedbacks, setFeedbacks] = useState([]);
+    const initFeedback = {
+        comment: '',
+        rating: null,
+    };
+    const [myFeedback, setMyFeedbacks] = useState(initFeedback)
     const initPurchaseQuantity = {
         maxPurchaseQuantity: '',
         modelId: '',
@@ -62,7 +69,9 @@ const ProductDetailPage = () => {
     useEffect(async () => {
         document.title = "ProductsPage Details"
         console.log(shopId, '', productId)
+
         setLoading(true)
+        getProductFeedbacks();
         await getProductDetail();
     }, []);
 
@@ -81,10 +90,11 @@ const ProductDetailPage = () => {
         setLoading(false);
     }
 
-    const getProductFeedbacks = async () => {
-        console.log('get product feedbacks');
-        let data = await productService.getProductFeedbacks(productId);
-        console.log(data);
+    const getProductFeedbacks = () => {
+        productService.getProductFeedbacks(productId).then(data => {
+            setFeedbacks(data)
+            console.log('get feedbacks', data);
+        });
     }
 
     //add product to cart
@@ -145,14 +155,20 @@ const ProductDetailPage = () => {
         }
     }
 
-    useEffect(() => {
-        getProductFeedbacks();
-    }, []);
-
+    const submitFeedback = async (e) => {
+        let comment = myFeedback.comment;
+        let rating = myFeedback.rating;
+        if (!myFeedback || !rating || !comment) {
+            return;
+        }
+        const data = await userService.saveFeedback(productId, rating, comment);
+        setFeedbacks((prev) => ([data, ...prev]));
+        setMyFeedbacks(initFeedback);
+    }
 
     return (
-        <Box minH={'100vh'} bg={'white'} bgColor={'gray.100'}>
-            <Flex w={'100%'} minH={'100vh'}>
+        <Flex direction={'column'} minH={'100vh'} bg={'white'} bgColor={'gray.100'}>
+            <Flex w={'100%'}>
                 <Box flex={5} w={'100%'} bg={'white'}>
                     <VStack align={'start'} spacing={5} p={10} w={'100%'} bg={'white'}>
                         <VStack spacing={2} w={'100%'}>
@@ -377,6 +393,49 @@ const ProductDetailPage = () => {
                     </Flex>
                 </Box>
             </Flex>
+            {/*FEEDBACKS*/}
+            <Box w={'100%'} h={2}/>
+            <Flex bg={'white'} w={'100%'} p={10} direction={'column'} alignItems={'start'} justifyContent={'start'}>
+                <Text>Feedbacks</Text>
+                <Divider my={5}/>
+                <Flex direction={'column'} w={'100%'} justifyContent={'start'} alignItems={'start'}>
+
+                    <Flex w={'100%'} justifyContent={'start'} alignItems={'start'}>
+                        <FormControl w={'60%'}>
+                            {/*<FormLabel htmlFor='feedback'>Your feedback</FormLabel>*/}
+                            <Input value={myFeedback.comment || ''}
+                                   onChange={(e) => setMyFeedbacks((prev) => ({...prev, comment: e.target.value}))}
+                                   id='feedback' type='text' size={'sm'}/>
+                            <FormHelperText>We'll never share your email.</FormHelperText>
+                        </FormControl>
+                        <Box w={5}/>
+                        <Button colorScheme={'orange'} size={'sm'} onClick={submitFeedback}
+                                vaiant={'solid'}>Submit</Button>
+                    </Flex>
+                    <Box py={2}/>
+                    <RatingStarts onClick={(i) => setMyFeedbacks((prev) => ({...prev, rating: (i++)}))}
+                                  starts={myFeedback.rating || 0}/>
+                </Flex>
+                <Divider my={5}/>
+                <Text> {JSON.stringify(myFeedback)}</Text>
+                {feedbacks.map((item, i) => (
+                    <Flex key={item.id || i} w={'100%'} direction={'column'} justifyContent={'start'} py={2}>
+                        <Flex alignItems={'start'}>
+                            <Avatar size='md' name='Ryan Florence' src='https://bit.ly/ryan-florence'/>
+                            <Flex w={'100%'} px={2} direction={'column'}>
+                                <Text fontSize={12}
+                                      fontWeight={'normal'}>{item.user.username || item.user.email || ''}</Text>
+                                <Text fontSize={14} fontWeight={'medium'}>{item.comment}</Text>
+                                <RatingStarts starts={item.rating} onClick={() => {
+                                }}/>
+                            </Flex>
+                        </Flex>
+                        <Divider pt={2} w={'30%'}/>
+                    </Flex>
+                ))}
+
+            </Flex>
+            {/*END OF FEEDBACKS*/}
             {/*RELATED PRODUCT*/}
             <Box p={10} w={'100%'} bg={'white'}>
                 <Flex w={'100%'} justifyContent={'start'}>
@@ -386,7 +445,7 @@ const ProductDetailPage = () => {
                     </HStack>
                 </Flex>
             </Box>
-        </Box>
+        </Flex>
     );
 };
 

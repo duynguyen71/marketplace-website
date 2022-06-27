@@ -1,25 +1,28 @@
-import {AppConstants} from "../constants/app.constants";
+export const ApplicationConstants = {
+    SET_REDIRECT_URL: 'SET_REDIRECT_URL',
+    CLEAR_REDIRECT_URL: 'CLEAR_REDIRECT_URL',
+}
 
-
-const initState = {isLoading: false}
-const appReducer = (state = initState, action) => {
+const initState = {isLoading: false, redirectUrl: ''}
+const applicationReducer = (state = initState, action) => {
     const {type, payload} = action;
     switch (type) {
-        case AppConstants.IS_LOADING: {
+        case ApplicationConstants.SET_REDIRECT_URL: {
             return {
-                isLoading: true
+                ...initState,
+                redirectUrl: payload
             }
         }
-        case AppConstants.LOADED : {
+        case ApplicationConstants.CLEAR_REDIRECT_URL: {
             return {
-                isLoading: false
-            };
+                ...initState,
+                redirectUrl: '',
+            }
         }
         default:
-            return {
-                isLoading: false
-            }
+            return {...state};
 
     }
-
 }
+
+export default applicationReducer;

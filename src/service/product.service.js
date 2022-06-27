@@ -63,7 +63,8 @@ const productService = {
     getProductFeedbacks: async (productId) => {
         const url = `/api/v1/public/products/${productId}/feedbacks`;
         const resp = await axiosClient.get(url);
-        return resp;
+        const data = await resp.data;
+        return data;
     },
 
     //send feed back

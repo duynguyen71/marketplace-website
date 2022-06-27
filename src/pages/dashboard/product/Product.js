@@ -176,7 +176,6 @@ const Product = () => {
   const history = useHistory();
 
   const getProducts = async () => {
-    console.log("TGet products");
     try {
       let resp = await AdminProductService.getProducts();
       console.log(resp);

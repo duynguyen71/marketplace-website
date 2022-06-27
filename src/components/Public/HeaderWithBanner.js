@@ -66,14 +66,19 @@ const HeaderWithBanner = () => {
                             <Text
                                 cursor={'pointer'}
                                 onClick={() => {
-                                    authAction.logout();
                                     shoppingCartAction.clearCart();
-                                    history.push('/login');
+                                    authAction.logout();
+                                    return history.replace('/login');
                                 }}>{loggedIn ? "Log out" : "Log in"}</Text>
                             {
-                                !loggedIn && <Text cursor={'pointer'} onClick={() => history.push('/register')
+                                !loggedIn && <Text cursor={'pointer'} onClick={() => history.replace('/register')
                                 }>Register</Text>
                             }
+                            {loggedIn && <Text
+                                onClick={() => {
+                                    loggedIn ? history.push('/user/purchase') : authAction.logout();
+                                }}
+                            >My Account</Text>}
                         </HStack>
                     </Flex>
                     <Flex alignItems={'center'} py={4} justifyContent={'space-between'} w={'95%'} m={'auto'}>
