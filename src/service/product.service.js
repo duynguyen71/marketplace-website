@@ -12,8 +12,8 @@ const productService = {
     getProductDetail: async (productId) => {
         const url = `/api/v1/public/products/${productId}`;
         const resp = await axiosClient.get(url);
-        console.log('get product success ', resp);
-        return resp;
+        const data = await resp.data;
+        return data;
     },
 
     getPurchaseQuantity: async (shopId, productId, modelId, quantity) => {

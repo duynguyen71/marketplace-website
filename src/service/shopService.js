@@ -9,7 +9,6 @@ const getOrders = async () => {
         }
     })
     const data = await resp.data;
-    console.log(data);
     return data;
 }
 
@@ -39,9 +38,20 @@ const getFeedbacks = async () => {
     return data;
 }
 
+const getProductDetail = async (productId) => {
+    const url = `/api/v1/member/users/me/shop/products/${productId}`
+    const resp = await axiosClient.get(url, {
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem('access_token')}`
+        }
+    });
+    const data = await resp.data;
+    return data;
+}
 export const shopService = {
     getOrders: getOrders,
     getOrderStatus: getOrderStatus,
-    getFeedbacks:getFeedbacks
+    getFeedbacks: getFeedbacks,
+    getProductDetail: getProductDetail
 }
 

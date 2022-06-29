@@ -5,7 +5,7 @@ import {useHistory} from "react-router-dom";
 
 const ProductEntry = ({...props}) => {
     const history = useHistory();
-    const {id, name, minPrice, maxPrice, coverImage, solid, shop} = props;
+    const {id, name, minPrice, maxPrice, coverImage, standardPrice, salesPrice, solid, shop, models} = props;
     useEffect(() => {
     }, [])
     return (
@@ -32,10 +32,12 @@ const ProductEntry = ({...props}) => {
                      borderRadius={'md'}>
                     <VStack align={'start'} w={'100%'}>
                         {/*PRODUCT NAME*/}
-                        <Text isTruncated fontWeight={'medium'} fontSize={15}>{name}</Text>
+                        <Text noOfLines={1} isTruncated maxW={200} textAlign={'start'} fontWeight={'medium'}
+                              fontSize={15}>{name}</Text>
                         <HStack>
-                            <Text fontSize={14}>{minPrice}{' '}-{''}</Text>
-                            {maxPrice && (minPrice < maxPrice) && <Text fontSize={14}>{maxPrice}</Text>}
+                            <Text
+
+                                fontSize={14}>{models.length > 0 ? `${minPrice} - ${maxPrice}` : `${salesPrice ? salesPrice : standardPrice}`}</Text>
                         </HStack>
                         <Flex w={'100%'} justifyContent={'space-between'}>
                             <HStack>
@@ -48,8 +50,10 @@ const ProductEntry = ({...props}) => {
                             </HStack>
                             <Text fontSize={12} color={'gray.600'}>{solid} đã bán</Text>
                         </Flex>
-                        <Text color={'gray.500'} fontSize={10} textAlign={'end'}
-                              w={'100%'}>
+                        <Text
+                            noOfLines={1}
+                            maxW={300} isTruncated color={'gray.500'} fontSize={10} textAlign={'end'}
+                            w={'100%'}>
                             {shop.name}
                         </Text>
                     </VStack>

@@ -97,7 +97,10 @@ const DashboardMain = () => {
             shopService.getOrders().then((data) => {
                 setOrders(data);
             })
-            shopService.getFeedbacks().then(data => setFeedbacks(data));
+            shopService.getFeedbacks().then(data => {
+                setFeedbacks(data);
+                console.log('get feedbacks', data);
+            });
         }, []);
 
         return (
@@ -106,23 +109,26 @@ const DashboardMain = () => {
                     {/*Section 1*/}
                     <BasicStatistics/>
                     {/*Section 2*/}
-                    <Stack minH={'50vh'} pt={5} spacing={2} w={'100%'} direction={{base: 'column', md: 'row'}}>
-                        <Box w={'100%'} p={{base: 1, md: 4}} bg={'white'} flex={7}>
+                    <Stack minH={'50vh'} maxH={'50vh'} pt={5} spacing={2} w={'100%'}
+                           direction={{base: 'column', md: 'row'}}>
+                        <Box borderRadius={'md'} w={'100%'} p={{base: 1, md: 4}} bg={'white'} flex={7}>
                             <VStack align={'start'} w={'100%'}>
                                 <Text> Todo List</Text>
                             </VStack>
                         </Box>
-                        <Box maxH={300} overflowY={'scroll'} p={{base: 1, md: 4}} flex={3} bg={'white'}>
+                        {/*FEEDBACK CARDS*/}
+                        <Box overflowY={'scroll'} borderRadius={'md'} p={{base: 1, md: 4}} flex={3} bg={'white'}>
                             <Text>Feedbacks</Text>
-                            <VStack pt={5} spacing={5}>
+                            <Flex direction={'column'} pt={5} spacing={5} alignItems={'start'}>
                                 {
                                     feedbacks.map((item, i) => (
-                                        <FeedbackCard key={i} name={item.name} role={item.role} content={item.content}
-                                                      avatar={item.avatar} index={i}/>
+                                        <FeedbackCard key={i} name={item.user.name} role={item.role} content={item.comment}
+                                                      avatar={item.user.avt} index={i}/>
                                     ))
                                 }
-                            </VStack>
+                            </Flex>
                         </Box>
+                        {/*FEEDBACK CARDS*/}
                     </Stack>
                     {/*<Heading>Content</Heading>*/}
                     {/*New orders*/}

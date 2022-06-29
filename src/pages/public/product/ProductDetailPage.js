@@ -40,9 +40,9 @@ const setting = {
 }
 const ProductDetailPage = () => {
     const {shopId, productId} = useParams();
-    const [productDetail, setProductDetail] = useState({});
+    const [productDetail, setProductDetail] = useState({models: [], variants: [], stock: 0});
     const [selectProduct, setSelectProduct] = useState({
-        qty: 1
+        qty: 1,
     });
     const [defaultVariants, setDefaultVariants] = useState([]);
     const [selectedModelNames, setSelectedModelNames] = useState([]);
@@ -64,6 +64,7 @@ const ProductDetailPage = () => {
         stock: '',
         modelName: '',
 
+
     }
     const [purchaseQuantity, setPurchaseQuantity] = useState(initPurchaseQuantity);
     useEffect(async () => {
@@ -78,12 +79,10 @@ const ProductDetailPage = () => {
     //gewt product detail
     const getProductDetail = async () => {
         try {
-            const resp = await productService.getProductDetail(productId);
-            let productDetail = resp.data;
-            console.log('product detail', productDetail)
-            setProductDetail(productDetail);
-            setDefaultVariants(productDetail.variants || []);
-            console.log(productDetail);
+            const data = await productService.getProductDetail(productId);
+            setProductDetail(data);
+            setDefaultVariants(data.variants || []);
+            console.log(data);
         } catch (e) {
             console.log("Failed to get product with id : ", productId);
         }
@@ -133,21 +132,23 @@ const ProductDetailPage = () => {
                         const data = resp.data;
                         setPurchaseQuantity(prev => ({
                             ...prev,
-                            maxPurchaseQuantity: data.maxPurchaseQuantity,
-                            modelId: data.modelId,
-                            price: data.price,
-                            priceBeforeDiscount: data.priceBeforeDiscount,
-                            stock: data.stock,
-                            modelName: data.modelName
+                            // maxPurchaseQuantity: data.maxPurchaseQuantity,
+                            // modelId: data.modelId,
+                            // price: data.price,
+                            // priceBeforeDiscount: data.priceBeforeDiscount,
+                            // stock: data.stock,
+                            // modelName: data.modelName
+                            ...data,
                         }))
                         console.log('purchase quantity', data);
                         return;
                     } catch (e) {
                         setPurchaseQuantity(prevState => ({
-                            ...purchaseQuantity,
+                            ...prevState,
                             stock: 0,
                         }))
                     }
+                    return;
                 } else {
                     setPurchaseQuantity(initPurchaseQuantity);
                 }
@@ -170,7 +171,7 @@ const ProductDetailPage = () => {
         <Flex direction={'column'} minH={'100vh'} bg={'white'} bgColor={'gray.100'}>
             <Flex w={'100%'}>
                 <Box flex={5} w={'100%'} bg={'white'}>
-                    <VStack align={'start'} spacing={5} p={10} w={'100%'} bg={'white'}>
+                    <VStack align={'start'} p={10} w={'100%'} bg={'white'}>
                         <VStack spacing={2} w={'100%'}>
                             <HStack spacing={2} w={'100%'} alignItems={'center'}>
                                 <Text color={'blue.500'}>Rating</Text>
@@ -183,18 +184,38 @@ const ProductDetailPage = () => {
                         </VStack>
                         {/*PRODUCT NAME*/}
                         <Heading fontSize={'xx-large'} textColor={'gray.700'}>{productDetail.name}</Heading>
-                        <HStack spacing={2}>
+                        {/*PRICE*/}
+                        {!purchaseQuantity.price ? ((productDetail.variants.length > 0) ? <HStack pt={4} spacing={2}>
                             <Text
                                 fontSize={'x-large'}
                                 color={'gray.800'}>
-                                ${productDetail.minPrice}{' '}{"-"}{' '}
+                                {productDetail.minPrice || 0}{' '}{"-"}{' '}
                             </Text>
                             <Text fontSize={'x-large'}
                             >
-                                ${productDetail.maxPrice}
+                                {productDetail.maxPrice || 0}{' vnd'}
                             </Text>
-                        </HStack>
-                        <Text textColor={'gray.500'}>Lorem ipsum dolor sit amet.</Text>
+                        </HStack> : <HStack spacing={2} pt={4}>
+                            <Text
+                                fontSize={'x-large'}
+                                color={'gray.800'}>
+                                {productDetail.salesPrice || 0}{' '}{"-"}{' '}
+                            </Text>
+                            <Text fontSize={'x-large'}
+                            >
+                                {productDetail.standardPrice || 0}{' vnd'}
+                            </Text>
+                        </HStack>) : (<HStack spacing={2} pt={4}>
+                            <Text
+                                fontSize={'x-large'}
+                                color={'gray.800'}>
+                                {purchaseQuantity.price || 0}{' '}{"-"}{' '}
+                            </Text>
+                            <Text fontSize={'x-large'}
+                            >
+                                {purchaseQuantity.priceBeforeDiscount || 0}{' vnd'}
+                            </Text>
+                        </HStack>)}
                         {/*COLOR && SIZE*/}
                         <Flex w={'100%'} justifyContent={'space-between'} alignItem={'center'}>
                             {
@@ -240,12 +261,9 @@ const ProductDetailPage = () => {
                         {/*END OF COLOR && SIZE*/}
                         {/*STOCK AVAILABLE*/}
                         <HStack>
-                            {
-                                purchaseQuantity &&
-                                <Text>{purchaseQuantity.stock
-                                    ? purchaseQuantity.stock
-                                    : '0'} {' stock available'}</Text>
-                            }
+                            <Text fontWeight={'medium'}
+                                  fontSize={16}> {purchaseQuantity.stock ? purchaseQuantity.stock : productDetail.stock} {'stock available'}</Text>
+
                         </HStack>
                         {/*QUANTITY*/}
                         <Flex justifyContent={'space-between'} alignItems={'end'} w={'100%'}
@@ -255,13 +273,7 @@ const ProductDetailPage = () => {
                                 <InputGroup>
                                     <InputLeftAddon
                                         onClick={() => {
-                                            // setSelectProduct((prevState => (
-                                            //     {
-                                            //         ...prevState,
-                                            //         qty: prevState.qty >= 2 ? prevState.qty - 1 : 0
-                                            //     }
-                                            // )))
-                                            if (productDetail.models > 0) {
+                                            if (productDetail.models.length > 0) {
                                                 if (!purchaseQuantity.stock && purchaseQuantity.stock == 0) {
                                                     return;
                                                 }
@@ -287,20 +299,22 @@ const ProductDetailPage = () => {
                                             // if (productDetail.models.length === 0 || (!purchaseQuantity.stock && purchaseQuantity.stock == 0)) {
                                             //     return;
                                             // }
-                                            if (parseInt(e.target.value) >= 1) {
-                                                setSelectProduct((prevState => (
-                                                    {
-                                                        ...prevState,
-                                                        qty: parseInt(e.target.value)
-                                                    }
-                                                )));
-
+                                            let parseValue = 1;
+                                            if (e.target.value) {
+                                                parseValue = parseInt(e.target.value);
                                             }
+                                            setSelectProduct((prevState => (
+                                                {
+                                                    ...prevState,
+                                                    qty: parseValue
+                                                }
+                                            )));
+
                                         }}
-                                        value={selectProduct.qty} type='number'/>
+                                        value={selectProduct.qty || 0} type='number'/>
                                     <InputRightAddon
                                         onClick={() => {
-                                            if (productDetail.models > 0) {
+                                            if (productDetail.models.length > 0) {
                                                 if (!purchaseQuantity.stock && purchaseQuantity.stock == 0) {
                                                     return;
                                                 }
@@ -351,10 +365,7 @@ const ProductDetailPage = () => {
                         {/*END OF DESCRIPTION*/}
                         <Skeleton isLoaded={true}>
                             <Text>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Nullam sit amet turpis vitae est porta feugiat.
-                                Nunc in sapien interdum, condimentum arcu eget, tempus urna.
-                                Quisque vel erat in est fermentum posuere nec eu urna.
+                                {productDetail.description}
                             </Text>
                         </Skeleton>
                     </VStack>

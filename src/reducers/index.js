@@ -5,6 +5,7 @@ import productNewReducer from "./productNew.reducer";
 import adminProductReducer from "./AdminProductReducer";
 import shoppingCartReducer from "./shoppingCartReducer";
 import applicationReducer from "./app.reducer";
+import dashboardReducer from "./dashboardReducer";
 
 const allReducers = combineReducers({
     isLoggedReducer: isLoggedReducer,
@@ -13,6 +14,7 @@ const allReducers = combineReducers({
     adminProductReducer: adminProductReducer,
     shoppingCartReducer: shoppingCartReducer,
     applicationReducer: applicationReducer,
+    dashboardReducer : dashboardReducer,
 });
 
 export default allReducers;
