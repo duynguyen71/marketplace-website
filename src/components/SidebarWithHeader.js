@@ -139,6 +139,7 @@ const MobileNav = ({onOpen, children, user, ...rest}) => {
                                 <MenuItem>Profile</MenuItem>
                                 <MenuItem>Settings</MenuItem>
                                 <MenuItem>Billing</MenuItem>
+                                <MenuItem onClick={() => history.replace('/')}>Exit</MenuItem>
                                 <MenuDivider/>
                                 <MenuItem
                                     onClick={() => {

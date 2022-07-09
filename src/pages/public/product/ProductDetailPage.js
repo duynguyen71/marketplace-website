@@ -4,10 +4,10 @@ import {
     Box, Button,
     Center,
     Circle, Container, Divider,
-    Flex, FormControl, FormHelperText, FormLabel,
+    Flex, FormControl, FormHelperText, FormLabel, Grid, GridItem,
     Heading,
     HStack, IconButton,
-    Image, Input, InputGroup, InputLeftAddon, InputRightAddon, Skeleton,
+    Image, Input, InputGroup, InputLeftAddon, InputRightAddon, SimpleGrid, Skeleton, Spacer,
     Square,
     Stack,
     Text,
@@ -16,38 +16,51 @@ import {
 import Slider from 'react-slick';
 import {AddIcon, CheckIcon, MinusIcon, PhoneIcon, StarIcon} from "@chakra-ui/icons";
 import {AiOutlineHeart, AiOutlineShoppingCart, BsSubtract} from "react-icons/all";
-import {useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import productService from "../../../service/product.service";
-import {store} from "../../../index";
 import {shoppingCartAction} from "../../../actions/shoppingCartAction";
 import RatingStarts from "../../../components/RatingStarts";
 import userService from '../../../service/user.service';
+import {shopService} from "../../../service/shopService";
+import dateFormat from "dateformat";
+import {formatPrice} from "../../../components/Public/PriceTag";
 
-const setting = {
-    // dots: true,
-    // infinite: true,
-    slidesToShow: 4,
-    slidesToScroll: 2,
-    vertical: true,
-    arrows: false,
-    verticalSwiping: true,
-    beforeChange: function (currentSlide, nextSlide) {
-        console.log("before change", currentSlide, nextSlide);
-    },
-    afterChange: function (currentSlide) {
-        console.log("after change", currentSlide);
-    }
-}
 const ProductDetailPage = () => {
     const {shopId, productId} = useParams();
-    const [productDetail, setProductDetail] = useState({models: [], variants: [], stock: 0});
+    const history = useHistory();
+    const [shopDetail, setShopDetail] = useState(null);
+    const [sliderSetting, setSliderSetting] = useState({
+        // dots: true,
+        infinite: false,
+        slidesToShow: 12,
+        slidesToScroll: 1,
+        vertical: true,
+        arrows: false,
+        verticalSwiping: true,
+        beforeChange: function (currentSlide, nextSlide) {
+            console.log("before change", currentSlide, nextSlide);
+        },
+        afterChange: function (currentSlide) {
+            console.log("after change", currentSlide);
+        }
+    })
+    const [productDetail, setProductDetail] = useState({
+        models: [],
+        variants: [],
+        stock: 0,
+        images: [],
+        salesPrice: 0,
+        standardPrice: 0,
+        minPrice: 0,
+        maxPrice: 0
+    });
     const [selectProduct, setSelectProduct] = useState({
         qty: 1,
     });
     const [defaultVariants, setDefaultVariants] = useState([]);
     const [selectedModelNames, setSelectedModelNames] = useState([]);
     const [isLoading, setLoading] = useState(false);
-
+    const [imageIndex, setImageIndex] = useState(0);
     const [feedbacks, setFeedbacks] = useState([]);
     const initFeedback = {
         comment: '',
@@ -58,7 +71,11 @@ const ProductDetailPage = () => {
         maxPurchaseQuantity: '',
         modelId: '',
         price: '',
-        priceBeforeDiscount: '',
+        standardPrice: 0,
+        minPrice: 0,
+        maxPrice: 0,
+        salesPrice: 0,
+        priceBeforeDiscount: 0,
         productId: productId,
         shopId: shopId,
         stock: '',
@@ -66,7 +83,7 @@ const ProductDetailPage = () => {
 
 
     }
-    const [purchaseQuantity, setPurchaseQuantity] = useState(initPurchaseQuantity);
+    const [purchaseQuantity, setPurchaseQuantity] = useState(null);
     useEffect(async () => {
         document.title = "ProductsPage Details"
         console.log(shopId, '', productId)
@@ -74,15 +91,20 @@ const ProductDetailPage = () => {
         setLoading(true)
         getProductFeedbacks();
         await getProductDetail();
+
     }, []);
 
     //gewt product detail
     const getProductDetail = async () => {
         try {
             const data = await productService.getProductDetail(productId);
-            setProductDetail(data);
+            setProductDetail(prev => ({...prev, ...data}));
             setDefaultVariants(data.variants || []);
-            console.log(data);
+
+            shopService.getShopDetail(data.shop.id).then(s => {
+                console.log(s);
+                setShopDetail(s);
+            });
         } catch (e) {
             console.log("Failed to get product with id : ", productId);
         }
@@ -105,7 +127,13 @@ const ProductDetailPage = () => {
                 return;
             }
             console.log('purchase quantity', purchaseQuantity);
-            shoppingCartAction.addItem({...purchaseQuantity, name: productDetail.name, id: productDetail.id}, qty);
+            shoppingCartAction.addItem({
+                ...purchaseQuantity,
+                name: productDetail.name,
+                id: productDetail.id,
+                salesPrice: purchaseQuantity.salesPrice || productDetail.salesPrice || 0,
+                standardPrice: purchaseQuantity.standardPrice || productDetail.standardPrice || 0
+            }, qty);
         } else {
             shoppingCartAction.addItem({...productDetail, id: productDetail.id}, qty);
         }
@@ -185,37 +213,41 @@ const ProductDetailPage = () => {
                         {/*PRODUCT NAME*/}
                         <Heading fontSize={'xx-large'} textColor={'gray.700'}>{productDetail.name}</Heading>
                         {/*PRICE*/}
-                        {!purchaseQuantity.price ? ((productDetail.variants.length > 0) ? <HStack pt={4} spacing={2}>
-                            <Text
-                                fontSize={'x-large'}
-                                color={'gray.800'}>
-                                {productDetail.minPrice || 0}{' '}{"-"}{' '}
-                            </Text>
-                            <Text fontSize={'x-large'}
-                            >
-                                {productDetail.maxPrice || 0}{' vnd'}
-                            </Text>
-                        </HStack> : <HStack spacing={2} pt={4}>
-                            <Text
-                                fontSize={'x-large'}
-                                color={'gray.800'}>
-                                {productDetail.salesPrice || 0}{' '}{"-"}{' '}
-                            </Text>
-                            <Text fontSize={'x-large'}
-                            >
-                                {productDetail.standardPrice || 0}{' vnd'}
-                            </Text>
-                        </HStack>) : (<HStack spacing={2} pt={4}>
-                            <Text
-                                fontSize={'x-large'}
-                                color={'gray.800'}>
-                                {purchaseQuantity.price || 0}{' '}{"-"}{' '}
-                            </Text>
-                            <Text fontSize={'x-large'}
-                            >
-                                {purchaseQuantity.priceBeforeDiscount || 0}{' vnd'}
-                            </Text>
-                        </HStack>)}
+                        {
+                            productDetail.variants.length > 0 ? (
+                                    (purchaseQuantity == null || purchaseQuantity.stock == 0) ?
+                                        <HStack pt={4} spacing={2}>
+                                            <Text
+                                                fontSize={'x-large'}
+                                                color={'red.800'}>
+
+                                                {formatPrice(productDetail.minPrice) || 0}{' '}{"-"}{' '}
+                                            </Text>
+                                            <Text fontSize={'x-large'}>
+                                                {formatPrice(productDetail.maxPrice) || 0}
+                                            </Text>
+                                        </HStack> : (<HStack pt={4} spacing={2}>
+                                            <Text
+                                                fontSize={'x-large'}
+                                                color={'red.800'}>
+                                                {formatPrice(purchaseQuantity.salesPrice) || 0}
+                                            </Text>
+                                        </HStack>)
+
+                                ) :
+                                (<HStack pt={4} spacing={2}>
+                                    {productDetail.salesPrice !== productDetail.standardPrice && <Text
+                                        fontSize={'x-large'}
+                                        color={'red.800'}>
+                                        {formatPrice(productDetail.standardPrice) || 0}{' '}{"-"}{' '}
+                                    </Text>}
+                                    <Text fontSize={'x-large'}>
+                                        {formatPrice(productDetail.salesPrice) || 0}
+                                    </Text>
+                                </HStack>)
+
+                        }
+
                         {/*COLOR && SIZE*/}
                         <Flex w={'100%'} justifyContent={'space-between'} alignItem={'center'}>
                             {
@@ -261,9 +293,9 @@ const ProductDetailPage = () => {
                         {/*END OF COLOR && SIZE*/}
                         {/*STOCK AVAILABLE*/}
                         <HStack>
-                            <Text fontWeight={'medium'}
-                                  fontSize={16}> {purchaseQuantity.stock ? purchaseQuantity.stock : productDetail.stock} {'stock available'}</Text>
 
+                            <Text fontWeight={'medium'}
+                                  fontSize={16}> {(purchaseQuantity && purchaseQuantity.stock) ? purchaseQuantity.stock : productDetail.stock} {'stock available'}</Text>
                         </HStack>
                         {/*QUANTITY*/}
                         <Flex justifyContent={'space-between'} alignItems={'end'} w={'100%'}
@@ -373,44 +405,83 @@ const ProductDetailPage = () => {
                 <Box flex={7} bg={'white'}>
                     <Flex w={'100%'} p={10}>
                         <Box flex={10}>
-
                             {/*
                             PRODUCT IMAGE*/}
                             <AspectRatio ratio={1} maxH={'500px'}>
-                                <Box
+                                {productDetail && productDetail.images && (< Box
                                     backgroundPosition="center"
                                     backgroundRepeat="no-repeat"
                                     backgroundSize="cover"
-                                    backgroundImage={'https://images.pexels.com/photos/4066296/pexels-photo-4066296.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500'}
-                                />
-
+                                    backgroundImage={`${productDetail.images[imageIndex] !== undefined ? ('http://localhost:8080/api/v1/public/files/' + productDetail.images[imageIndex].image.name) : 'http://localhost:8080/api/v1/public/files/no-image'}`}
+                                />)}
 
                             </AspectRatio>
                         </Box>
-                        <Box flex={2}>
-                            <Slider {...setting}>
+                        <Box flex={2} maxH={'50vh'}>
+                            <Slider {...sliderSetting}  >
                                 {
-                                    [1, 2, 3, 4, 5, 1, 1, 1, 1, 1, 1, 1, 1].map((item, i) => (
-                                        <AspectRatio key={i} ratio={1} maxW={'100px'}>
+                                    productDetail.images.map((item, i) => (
+                                        <AspectRatio key={i} ratio={1} maxW={'100px'} onClick={() => {
+                                            setImageIndex(i);
+                                        }}>
                                             <Image
-                                                src={'https://images.pexels.com/photos/3210711/pexels-photo-3210711.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500'}
-                                                alt={'sub image'}/>
+                                                src={`http://localhost:8080/api/v1/public/files/${item.image.name}`}
+                                                alt={'image'}/>
                                         </AspectRatio>
                                     ))
                                 }
-
                             </Slider>
                         </Box>
                     </Flex>
                 </Box>
             </Flex>
+            <Box w={'100%'} h={2}/>
+            <Box bg={'white'}>
+                {/*SHOP DETAILS*/}
+                {shopDetail && (<Flex px={10} py={4} alignItems={'center'} justifyContent={'space-between'}>
+                    <VStack>
+                        <Avatar
+                            src={`http://localhost:8080/api/v1/public/files/${shopDetail.avt}`}
+                            alt={'shop name'} size={'md'}/>
+                        <Text fontSize={'16px'} fontWeight={'medium'}>{shopDetail.name}</Text>
+                    </VStack>
+                    <SimpleGrid pl={10} spacing={10} columns={3}>
+                        <HStack>
+                            <Text fontSize={'12'} color={'gray.600'}>Products</Text>
+                            <Text color={'tomato'}>{shopDetail.productCount || 0}</Text>
+                        </HStack>
+                        <HStack>
+                            <Text fontSize={'12'} color={'gray.600'}>Joined</Text>
+                            <Text color={'tomato'}>{dateFormat(shopDetail.createDate, 'dd/mm/yyyy')}</Text>
+                        </HStack> <HStack>
+                        <Text fontSize={'12'} color={'gray.600'}>Joined</Text>
+                        <Text color={'tomato'}>12</Text>
+                    </HStack> <HStack>
+                        <Text fontSize={'12'} color={'gray.600'}>Joined</Text>
+                        <Text color={'tomato'}>12</Text>
+                    </HStack> <HStack>
+                        <Text fontSize={'12'} color={'gray.600'}>Joined</Text>
+                        <Text color={'tomato'}>12</Text>
+                    </HStack> <HStack>
+                        <Text fontSize={'12'} color={'gray.600'}>Joined</Text>
+                        <Text color={'tomato'}>12</Text>
+                    </HStack>
+
+                    </SimpleGrid>
+                    <Spacer/>
+                    <Flex>
+                        <Button
+                            onClick={() => history.push(`/shop/${shopDetail.id}`)}
+                            size={'sm'} colorScheme={'orange'} variant={'outline'}>View Shop</Button>
+                    </Flex>
+                </Flex>)}
+            </Box>
             {/*FEEDBACKS*/}
             <Box w={'100%'} h={2}/>
             <Flex bg={'white'} w={'100%'} p={10} direction={'column'} alignItems={'start'} justifyContent={'start'}>
                 <Text>Feedbacks</Text>
                 <Divider my={5}/>
                 <Flex direction={'column'} w={'100%'} justifyContent={'start'} alignItems={'start'}>
-
                     <Flex w={'100%'} justifyContent={'start'} alignItems={'start'}>
                         <FormControl w={'60%'}>
                             {/*<FormLabel htmlFor='feedback'>Your feedback</FormLabel>*/}

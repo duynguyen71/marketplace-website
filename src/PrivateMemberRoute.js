@@ -15,8 +15,6 @@ const PrivateMemberRoute = ({children, ...rest}) => {
                render={() => {
                    console.log('user state', user);
                    if (user) {
-                       // const pathName = location.pathname;
-                       // console.log('current user path name', pathName);
                        return children;
                    } else {
                        const pathName = location.pathname;

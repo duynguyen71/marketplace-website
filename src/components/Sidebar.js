@@ -29,15 +29,6 @@ import {BiExit} from "react-icons/all";
 import {useHistory} from "react-router-dom";
 
 
-// let navItems = [
-//     {icon: FiHome, title: "Dashboard", description: "This is the description for the dashboard.", active: true},
-//     {icon: FiCalendar, title: "Calendar", description: "This is the description for the dashboard.", active: false},
-//     {icon: FiUser, title: "Clients", description: "This is the description for the dashboard.", active: false},
-//     {icon: IoPawOutline, title: "Animals", description: "This is the description for the dashboard.", active: false},
-//     {icon: FiDollarSign, title: "Stocks", description: "This is the description for the dashboard.", active: false},
-//     {icon: FiBriefcase, title: "Reports", description: "This is the description for the dashboard.", active: false},
-//     {icon: FiSettings, title: "Settings", description: "This is the description for the dashboard.", active: false},
-// ]
 const Sidebar = () => {
     const history = useHistory();
     const [navSize, setNavSize] = useState('large');
@@ -88,7 +79,8 @@ const Sidebar = () => {
         {icon: FiUser, title: "Clients", description: "This is the description for the dashboard.", active: false},
         {
             icon: IoPawOutline,
-            title: "Animals",
+            title: "Shop Decor",
+            path: '/dashboard/shop',
             description: "This is the description for the dashboard.",
             active: false
         },

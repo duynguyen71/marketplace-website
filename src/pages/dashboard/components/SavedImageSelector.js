@@ -14,19 +14,11 @@ import {AddIcon, DeleteIcon, EditIcon} from "@chakra-ui/icons";
 import Cropper from "react-easy-crop";
 import {isImage} from "../../../utities/ValidationUtil";
 
-const ImgSelector = ({index, handleSelectedImage}) => {
+const SavedImageSelector = ({index, handleSelectedImage, image}) => {
     const [selectFile, setSelectFile] = useState(null);
     const [showAction, setShowAction] = useState(false);
-    const [onEdit, setEdit] = useState(false);
-    const getPath = (file) => {
-        if (file) {
-            let path = (window.URL || window.webkitURL)?.createObjectURL(file);
-            return path;
-        }
-        return null;
-    };
+
     useEffect(() => {
-        console.log("render image selector");
     }, [setSelectFile]);
 
     return (
@@ -59,16 +51,14 @@ const ImgSelector = ({index, handleSelectedImage}) => {
                                 />
                             )}
 
-                            {selectFile && (
-                                <AspectRatio ratio={1}>
-                                    <Image
-                                        fit={"cover"}
-                                        align={"center"}
-                                        src={getPath(selectFile)}
-
-                                    />
-                                </AspectRatio>
-                            )}
+                            <AspectRatio ratio={1}>
+                                <Image
+                                    boxSize='100px'
+                                    objectFit='cover'
+                                    alt={image.name || ''}
+                                    src={`http://localhost:8080/api/v1/public/files/ducati_hypermotard_950_concept_2019_5k_2-1650093980872`}
+                                />
+                            </AspectRatio>
                         </Box>
                     </label>
                     {showAction && (
@@ -81,7 +71,6 @@ const ImgSelector = ({index, handleSelectedImage}) => {
                             align={"center"}
                         >
                             <Flex justifyContent={"space-around"} w={"90%"} p={1}>
-                                <Icon onClick={() => setEdit(true)} as={EditIcon}/>
                                 <Icon onClick={() => setSelectFile(null)} as={DeleteIcon}/>
                             </Flex>
                         </Box>
@@ -104,62 +93,10 @@ const ImgSelector = ({index, handleSelectedImage}) => {
                     />
                 </Box>
             </Box>
-            { onEdit &&
-            <EditImageBox path={getPath(selectFile)} setEdit={setEdit}/>}
+
         </>
     );
 };
 
-const EditImageBox = ({path, setEdit}) => {
-    const [crop, setCrop] = useState({
-        x: 0,
-        y: 0,
-    });
-    const [zoom, setZoom] = useState(1);
-    const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-        console.log(croppedArea, croppedAreaPixels);
-    }, []);
-    return (
-        <Box
-            transform={"translate(50%,-50%)"}
-            zIndex={100001}
-            boxSize={{base: "sm", md: "md", lg: "lg"}}
-            bg={"gray.300"}
-            position={"fixed"}
-            top={"50%"}
-            right={"50%"}
-        >
-            <Flex
-                justifyContent={"space-between"}
-                h={"100%"}
-                alignContent={"space-between"}
-                p={5}
-                w={"100%"}
-                direction={"column"}
-            >
-                <Flex w={"100%"}>
-                    <Box flex={9} position={"relative"}>
-                        <AspectRatio ratio={1}>
-                            <Cropper
-                                image={path}
-                                crop={crop}
-                                zoom={zoom}
-                                aspect={1 / 1}
-                                onCropChange={setCrop}
-                                onCropComplete={onCropComplete}
-                                onZoomChange={setZoom}
-                            />
-                        </AspectRatio>
-                    </Box>
-                    <Box flex={3}>Crop</Box>
-                </Flex>
-                <HStack spacing={2} alignSelf={"end"} align={"end"}>
-                    <Button>Save</Button>
-                    <Button onClick={() => setEdit(false)}>Cancel</Button>
-                </HStack>
-            </Flex>
-        </Box>
-    );
-};
 
-export default ImgSelector;
+export default SavedImageSelector;

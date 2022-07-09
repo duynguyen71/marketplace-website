@@ -2,11 +2,14 @@ import React, {useEffect} from 'react';
 import {Box, Flex, HStack, Text, VStack} from "@chakra-ui/react";
 import {StarIcon} from "@chakra-ui/icons";
 import {useHistory} from "react-router-dom";
+import * as url from "url";
+import {formatPrice} from "./PriceTag";
 
 const ProductEntry = ({...props}) => {
     const history = useHistory();
-    const {id, name, minPrice, maxPrice, coverImage, standardPrice, salesPrice, solid, shop, models} = props;
+    const {id, name, minPrice, maxPrice, coverImage, images, standardPrice, salesPrice, solid, shop, models,variants=[]} = props;
     useEffect(() => {
+
     }, [])
     return (
         <>
@@ -23,7 +26,7 @@ const ProductEntry = ({...props}) => {
                     backgroundPosition="center"
                     backgroundRepeat="no-repeat"
                     backgroundSize="cover"
-                    backgroundImage={'url(https://images.pexels.com/photos/4041157/pexels-photo-4041157.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260)'}
+                    backgroundImage={`url(${images[0] != undefined ? ('http://localhost:8080/api/v1/public/files/' + images[0].image.name) : 'http://localhost:8080/api/v1/public/files/no-image'})`}
                     flex={8}
 
                 >
@@ -37,7 +40,7 @@ const ProductEntry = ({...props}) => {
                         <HStack>
                             <Text
 
-                                fontSize={14}>{models.length > 0 ? `${minPrice} - ${maxPrice}` : `${salesPrice ? salesPrice : standardPrice}`}</Text>
+                                fontSize={14}>{variants.length > 0 ? `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}` : `${salesPrice ? formatPrice(salesPrice) : formatPrice(standardPrice)}`}</Text>
                         </HStack>
                         <Flex w={'100%'} justifyContent={'space-between'}>
                             <HStack>

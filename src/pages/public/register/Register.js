@@ -41,11 +41,12 @@ export default function Register() {
             try {
                 const resp = await appService.validationInputField(input, value);
             } catch (e) {
-                const data = e.response.data;
-                setError({
-                    type: input,
-                    message: data.message
-                })
+                if (e.message) {
+                    setError({
+                        type: input,
+                        message: e.message
+                    })
+                }
             }
         }
     }

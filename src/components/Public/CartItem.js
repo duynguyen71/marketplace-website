@@ -18,7 +18,6 @@ import {shoppingCartAction} from "../../actions/shoppingCartAction";
 
 const QuantitySelect = (props) => {
     return (
-
         <NumberInput maxW={100} step={1} defaultValue={props.qty || 1} min={1} max={20}
                      onChange={(valueStr, valueNum) => {
                          shoppingCartAction.updateCartItemQty(props.id, valueNum);
@@ -39,8 +38,11 @@ export const CartItem = (props) => {
         name,
         description,
         imageUrl,
+        images,
         currency,
         price,
+        salesPrice,
+        standardPrice,
         onChangeQuantity,
         modelName,
         qty,
@@ -57,7 +59,7 @@ export const CartItem = (props) => {
             <CartProductMeta
                 name={name}
                 description={description}
-                image={imageUrl}
+                image={(images != null && images[0] != undefined) ? ('http://localhost:8080/api/v1/public/files/' + images[0].image.name) : 'http://localhost:8080/api/v1/public/files/no-image'}
                 isGiftWrapping={isGiftWrapping}
                 modelName={modelName}
             />
@@ -75,7 +77,7 @@ export const CartItem = (props) => {
                     {...props}
 
                 />
-                <PriceTag price={price} currency={currency}/>
+                <PriceTag price={salesPrice} currency={currency}/>
                 <CloseButton
                     aria-label={`Delete ${name} from cart`} onClick={() => {
                     shoppingCartAction.removeItem(props.id);

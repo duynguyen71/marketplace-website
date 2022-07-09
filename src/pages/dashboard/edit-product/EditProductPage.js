@@ -32,6 +32,7 @@ import {IoIosRemoveCircleOutline, TiDeleteOutline} from "react-icons/all";
 import QuickScrollInto from "../create_product/QuickScrollInto";
 import {productNewAction} from "../../../actions/product-new.action";
 import {shopService} from "../../../service/shopService";
+import SavedImageSelector from "../components/SavedImageSelector";
 
 const EditProductPage = () => {
     const history = useHistory();
@@ -60,7 +61,8 @@ const EditProductPage = () => {
         message: "",
     });
     //default state
-    const [images, setImages] = useState(new Array(8));
+    const [images, setImages] = useState(new Array(4));
+    const [savedImages, setSavedImages] = useState([]);
     const [columns, setColumns] = useState(["Variant", "Price", "Stock", "SKU"]);
 
     const [brands, setBrands] = useState([]);
@@ -70,6 +72,7 @@ const EditProductPage = () => {
             setProduct(data);
             console.log(data);
             document.title = 'Edit | ' + data?.name;
+            setSavedImages(data.images || []);
         });
         productService.getBrands().then(data => setBrands(data.data));
     }, []);
@@ -139,7 +142,6 @@ const EditProductPage = () => {
 
     const onSave = async () => {
         if (checkProductValid(product)) {
-
             let filteredImages = images.filter(item => item != null);
             let productTmp = {...product};
             productTmp = {
@@ -254,10 +256,18 @@ const EditProductPage = () => {
                     <VStack align={"start"}>
                         <Text>Hinh anh san pham</Text>
                         <Wrap>
+                            {savedImages && savedImages.map((item, i) => (
+                                <SavedImageSelector key={item.id} image={item} handleSelectedImage={() => {
+                                }}/>
+                            ))}
+                        </Wrap>
+                        <Wrap>
                             {[1, 1, 1, 1, 1, 1, 1, 1].map((item, i) => (
                                 <ImgSelector
                                     path={""}
-                                    handleSelectedImage={() => {
+                                    handleSelectedImage={async (file, index) => {
+                                        const fileUploadResp = await productService.saveFile(file);
+                                        setImages(prev => [...prev, fileUploadResp]);
                                     }}
                                     index={i}
                                 />
@@ -453,7 +463,6 @@ const EditProductPage = () => {
                                 <FormLabel fontWeight={'normal'} htmlFor='maxPrice'>Sales Price</FormLabel>
                                 <Input
                                     size={'sm'}
-
                                     value={product?.salesPrice || ''}
                                     onChange={(e) => {
                                         let value = e.target.value;
@@ -469,6 +478,7 @@ const EditProductPage = () => {
                                 onChange={(e) => {
                                     let value = e.target.value;
                                     setProduct((prev) => ({...prev, stock: value ? parseInt(value) : 0}))
+                                    console.log(product.stock);
                                 }}
                                 id='maxPrice' type='number'/>
                             {/*<FormHelperText>We'll never share your email.</FormHelperText>*/}

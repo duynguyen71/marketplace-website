@@ -28,7 +28,7 @@ export const CartOrderSummary = () => {
 
     //calc total price
     const calcTotalPrice = () => {
-        const totalPrice = cartItems.reduce((sum, {price, qty}) => sum + price * qty, 0);
+        const totalPrice = cartItems.reduce((sum, {salesPrice, qty}) => sum + salesPrice * qty, 0);
         setTotalPrice(totalPrice);
     }
     return (

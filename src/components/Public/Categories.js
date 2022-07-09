@@ -16,16 +16,20 @@ const Categories = () => {
                 {
                     categories && categories.map((category, i) => (
                         <Box
+                            alignItems={'center'}
                             key={i}
                             onClick={() => history.push(`/products/${category.name}`)}
                             cursor={'pointer'}
                             textAlign={'center'} key={i} borderRadius={'md'}
                             position={'relative'}>
                             <AspectRatio borderRadius={'md'} w={'100px'} ratio={1}>
-                                <Image
-                                    borderRadius={'md'}
-                                    src='https://images.pexels.com/photos/792345/pexels-photo-792345.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
-                                    alt='Segun Adebayo'/>
+                                {/*<Image*/}
+                                {/*    borderRadius={'md'}*/}
+                                {/*    src='https://images.pexels.com/photos/792345/pexels-photo-792345.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'*/}
+                                {/*    alt='Segun Adebayo'/>*/}
+                                <Box borderRadius={'md'} bg={'tomato'}>
+
+                                </Box>
                             </AspectRatio>
                             <Text
                                 alignItems={'center'}

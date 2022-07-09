@@ -81,16 +81,21 @@ const Product = () => {
                 Header: "Price",
                 Footer: "Price",
                 accessor: (d) => (
-                    <Flex alignItems={'start'} justifyContent={'start'}>
+                    (d.models != null && d.models.length) > 0 ? (<Flex alignItems={'start'} justifyContent={'start'}>
                         <Text>
                             {d.minPrice || 0}
-                            {" - "}
                         </Text>
                         <Text>
-                            {d.maxPrice || 0}
+                            {'-'} {d.maxPrice || 0}
                             {" vnd"}
                         </Text>
-                    </Flex>
+                    </Flex>) : (<Flex alignItems={'start'} justifyContent={'start'}>
+
+                        <Text>
+                            {d.salesPrice || d.standardPrice}
+                            {" vnd"}
+                        </Text>
+                    </Flex>)
                 ),
             },
             {

@@ -4,7 +4,8 @@ const appService = {
 
     validationInputField: async (inputName, value) => {
         const url = `/api/v1/public/users/registration/validation?input=${inputName}&value=${value}`;
-        return await axiosClient.get(url);
+        const data = await axiosClient.get(url);
+        return data;
     }
 }
 

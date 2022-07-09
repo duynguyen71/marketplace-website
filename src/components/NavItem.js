@@ -31,8 +31,6 @@ export default function NavItem({icon, title, description, active, navSize, onCl
             w="100%"
             alignItems={navSize == "small" ? "center" : "flex-start"}
         >
-
-
             <Menu placement="right">
                 {!path && <Link
                     backgroundColor={active && "#AEC8CA"}
@@ -70,7 +68,7 @@ export default function NavItem({icon, title, description, active, navSize, onCl
                 </Link>
                 }
                 {
-                    children && children.length > 0 && <MenuList
+                    (children != null) && children.length > 0 &&( <MenuList
                         py={0}
                         // border="none"
                         w={200}
@@ -92,15 +90,7 @@ export default function NavItem({icon, title, description, active, navSize, onCl
 
                             ))
                         }
-                        {/*<RLink to="/dashboard/products">*/}
-                        {/*    <MenuItem>*/}
-                        {/*        BHdfh*/}
-                        {/*    </MenuItem>*/}
-                        {/*</RLink>*/}
-                        {/*<MenuItem>Open Closed Tab</MenuItem>*/}
-                        {/*<MenuItem>Open File</MenuItem>*/}
-                        {/*<NavHoverBox title={title} icon={icon} description={description}/>*/}
-                    </MenuList>
+                    </MenuList>)
                 }
             </Menu>
         </Flex>

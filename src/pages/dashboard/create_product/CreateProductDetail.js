@@ -27,7 +27,7 @@ import {
     Tr,
     VStack,
     Wrap,
-    FormErrorMessage,
+    FormErrorMessage, FormLabel,
 } from "@chakra-ui/react";
 import ImgSelector from "../components/ImgSelector";
 import {useSelector} from "react-redux";
@@ -49,6 +49,10 @@ const CreateProductDetail = () => {
         categoryPaths: [],
         description: "",
         variants: [],
+        standardPrice: 0,
+        salesPrice: 0,
+        minPrice: 0,
+        maxPrice: 0
     });
     const [variantOption, setVariantOption] = useState({
         price: "",
@@ -84,20 +88,11 @@ const CreateProductDetail = () => {
     const selectedImagePaths = useSelector(
         (state) => state.productNewReducer.selectedImagePaths
     );
-    const handleSelectedImage = async (file, index) => {
+    const handleSaveImage = async (file, index) => {
+        console.log('upload image');
         try {
             const resp = await productService.saveFile(file);
-            let temp = [...images];
-            temp[index] = resp.id;
-            setImages([...temp]);
-            let productTemp = product;
-            productTemp = {
-                ...productTemp,
-                images: [...temp],
-            };
-            updateProductState(productTemp);
-            console.log('update image success');
-            console.log(images);
+            setImages(p => [...p, resp.data.id]);
         } catch (e) {
             console.log("Failed to upload image");
         }
@@ -261,6 +256,7 @@ const CreateProductDetail = () => {
     };
 
     const updateProduct = (productState) => {
+        setProduct((prev) => ({...prev, ...productState}));
         productNewAction.setProduct({...productState});
     };
 
@@ -278,18 +274,23 @@ const CreateProductDetail = () => {
     const productAttributeRef = useRef(null);
 
     const handleSaveProduct = async () => {
-        // check product is valid
         if (checkProductValid(product)) {
-            let t = images.filter(item => item != null);
-            updateProduct({...product, images: [...t]});
+            let t = images.filter(item => (item != undefined && item != null));
+            let temp = {...product};
+            temp = {
+                ...temp,
+                images: [...t],
+            }
+            updateProduct(temp);
             try {
-                const resp = await productNewAction.saveProduct(product);
+                const resp = await productNewAction.saveProduct(temp);
                 console.log(resp);
                 // redirect to product page
                 history.replace('/dashboard/products');
                 return;
             } catch (e) {
-                console.log(e.response.data);
+                history.replace('/dashboard/products');
+                // console.log(e.response.data);
             } finally {
                 console.log(product);
             }
@@ -323,7 +324,7 @@ const CreateProductDetail = () => {
                             {[1, 1, 1, 1, 1, 1, 1, 1].map((item, i) => (
                                 <ImgSelector
                                     path={""}
-                                    handleSelectedImage={handleSelectedImage}
+                                    handleSelectedImage={(file, index) => handleSaveImage(file, index)}
                                     index={i}
                                 />
                             ))}
@@ -456,6 +457,104 @@ const CreateProductDetail = () => {
                     <Text letterSpacing="2" fontWeight="medium" fontSize="20px">
                         Thong tin ban hang
                     </Text>
+                    {(product.variants && product.variants.length > 0 && product.variants[0].name) ? (
+                        <Flex py={3} alignItems={'center'} justifyContent={'start'}>
+                            <FormControl>
+                                <FormLabel fontWeight={'normal'} htmlFor='minPrice'>Min price</FormLabel>
+                                <Input
+                                    size={'sm'}
+                                    value={product?.minPrice || ''}
+                                    onChange={(e) => {
+                                        let value = e.target.value;
+                                        let temp = {...product};
+                                        temp = {
+                                            ...temp,
+                                            minPrice: value ? parseFloat(value) : 0
+                                        }
+                                        updateProduct(temp);
+                                    }}
+                                    id='minPrice' type='number'/>
+                                {/*<FormHelperText>We'll never share your email.</FormHelperText>*/}
+                            </FormControl>
+                            <Box w={10}/>
+                            <FormControl>
+                                <FormLabel fontWeight={'normal'} htmlFor='maxPrice'>Max price</FormLabel>
+                                <Input
+                                    size={'sm'}
+                                    value={product?.maxPrice || ''}
+                                    onChange={(e) => {
+                                        let value = e.target.value;
+                                        let temp = {...product};
+                                        temp = {
+                                            ...temp,
+                                            maxPrice: value ? parseFloat(value) : 0
+                                        }
+                                        updateProduct(temp);
+                                    }}
+                                    id='maxPrice' type='number'/>
+                                {/*<FormHelperText>We'll never share your email.</FormHelperText>*/}
+                            </FormControl>
+                        </Flex>) : (
+                        <Flex py={3} direction={'column'} alignItems={'center'} justifyContent={'start'}>
+                            <FormControl>
+                                <FormLabel fontWeight={'normal'} htmlFor='minPrice'>Standard price</FormLabel>
+                                <Input
+                                    size={'sm'}
+                                    value={product.standardPrice || ''}
+                                    onChange={(e) => {
+                                        let value = e.target.value;
+                                        console.log(value);
+
+                                        let parseValue = value ? parseFloat(value) : 0;
+                                        let temp = {...product};
+                                        temp = {
+                                            ...temp,
+                                            standardPrice: parseValue,
+                                            salesPrice: parseValue
+                                        }
+                                        updateProduct(temp);
+                                    }}
+                                    id='minPrice' type='number'/>
+                                {/*<FormHelperText>We'll never share your email.</FormHelperText>*/}
+                            </FormControl>
+                            <Box w={10}/>
+                            <FormControl>
+                                <FormLabel fontWeight={'normal'} htmlFor='maxPrice'>Sales Price</FormLabel>
+                                <Input
+                                    size={'sm'}
+                                    value={product?.salesPrice || ''}
+
+
+                                    onChange={(e) => {
+                                        let value = e.target.value;
+                                        let temp = {...product};
+                                        temp = {
+                                            ...temp,
+                                            salesPrice: value ? parseFloat(value) : 0
+                                        }
+                                        updateProduct(temp);
+                                    }}
+                                    id='maxPrice' type='number'/>
+                                {/*<FormHelperText>We'll never share your email.</FormHelperText>*/}
+                            </FormControl> <FormControl>
+                            <FormLabel fontWeight={'normal'} htmlFor='maxPrice'>Stock</FormLabel>
+                            <Input
+                                size={'sm'}
+                                value={product?.stock || ''}
+                                onChange={(e) => {
+                                    let value = e.target.value;
+                                    let temp = {...product};
+                                    temp = {
+                                        ...temp,
+                                        stock: value ? parseInt(value) : 0
+                                    }
+                                    updateProduct(temp);
+                                }}
+                                id='maxPrice' type='number'/>
+                            {/*<FormHelperText>We'll never share your email.</FormHelperText>*/}
+                        </FormControl>
+                        </Flex>
+                    )}
                     {(!product.variants || product.variants.length <= 0) && (
                         <Flex py="3" alignItems={"center"}>
                             <Text>Add Attribute</Text>

@@ -41,6 +41,12 @@ const authenticateReducer = (state = initialState, action) => {
                 user: action.payload.user
             }
         }
+        case userConstants.UPDATE_USER_DETAIL : {
+            return {
+                ...state,
+                user: {...state.user, ...action.payload.user},
+            }
+        }
         default:
             return initialState;
     }

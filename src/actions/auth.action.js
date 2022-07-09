@@ -60,8 +60,26 @@ const getUserDetail = async () => {
 
 }
 
+const saveUserDetail = async (userDetail) => {
+    try {
+        await userService.updateUserDetail(userDetail);
+        store.dispatch(
+            {
+                type: userConstants.UPDATE_USER_DETAIL,
+                payload: {
+                    user: {...userDetail}
+                }
+            }
+        );
+        console.log('update user detail success');
+    } catch (e) {
+        console.log('failed update user detail');
+    }
+}
+
 export const authAction = {
     login,
     logout,
-    getUserDetail
+    getUserDetail,
+  saveUserDetail
 }

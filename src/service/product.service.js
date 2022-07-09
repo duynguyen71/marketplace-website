@@ -28,12 +28,13 @@ const productService = {
     },
 
     saveFile: async (file) => {
-        const url = `/api/v1/public/files`;
+        const url = `/api/v1/member/files`;
         const formData = new FormData();
         formData.append("file", file);
         const resp = await axiosClient.post(url, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
+                "Authorization": `Bearer ${localStorage.getItem('access_token')}`
             },
         });
         return resp;

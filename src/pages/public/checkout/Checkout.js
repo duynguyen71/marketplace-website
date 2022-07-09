@@ -24,6 +24,7 @@ import userService from '../../../service/user.service';
 import {useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
 import {shoppingCartAction} from "../../../actions/shoppingCartAction";
+import {formatPrice} from "../../../components/Public/PriceTag";
 
 require('dotenv').config();
 const Checkout = () => {
@@ -84,7 +85,7 @@ const Checkout = () => {
         }
         let items = cartItems.map(item => ({
             productId: parseInt(item.id),
-            modelId: parseInt(item.modelId) ||null,
+            modelId: parseInt(item.modelId) || null,
             qty: parseInt(item.qty || 1),
             message: '',
         }));
@@ -108,20 +109,20 @@ const Checkout = () => {
     const [discount, setDiscount] = useState();
 
     const calcSubTotalPrice = () => {
-        const totalPrice = cartItems.reduce((sum, {priceBeforeDiscount, qty}) => sum + priceBeforeDiscount * qty, 0);
+        const totalPrice = cartItems.reduce((sum, {salesPrice, qty}) => sum + salesPrice * qty, 0);
         setSubTotalPrice(totalPrice);
     }
     const calcTotalPrice = () => {
-        const totalPrice = cartItems.reduce((sum, {price, qty}) => sum + price * qty, 0);
+        const totalPrice = cartItems.reduce((sum, {salesPrice, qty}) => sum + salesPrice * qty, 0);
         setTotalPrice(totalPrice);
     }
     const calcDiscountPrice = () => {
         const discountPrice = cartItems.reduce((sum, {
-            price,
-            priceBeforeDiscount,
+            salesPrice,
+            standardPrice,
             qty
-        }) => sum + ((priceBeforeDiscount - price) * qty), 0);
-        setDiscount(discountPrice);
+        }) => sum + ((standardPrice - salesPrice) * qty), 0);
+        setDiscount(discountPrice || 0);
     }
 
     const clearError = () => {
@@ -151,7 +152,6 @@ const Checkout = () => {
                             onChange={(e) => {
                                 let address = addresses.find(address => address.id === parseInt(e.target.value));
                                 if (address != undefined) {
-                                    console.log('selected address: ', address);
                                     setAddress(address);
                                     clearError();
 
@@ -292,21 +292,22 @@ const Checkout = () => {
                     <VStack spacing={4}>
                         <Flex w={'100%'} justifyContent={'space-between'} alignItems={'center'}>
                             <Text textColor={'gray.600'} fontSize={18}>Subtotal</Text>
-                            <Text textColor={'gray.800'} fontSize={20}>{subTotalPrice || '-'}</Text>
+                            <Text textColor={'gray.800'} fontSize={20}>{formatPrice(subTotalPrice) || '-'}</Text>
                         </Flex>
                         <Flex w={'100%'} justifyContent={'space-between'} alignItems={'center'}>
                             <Text textColor={'gray.600'} fontSize={18}>Shipping cost</Text>
-                            <Text textColor={'gray.800'} fontSize={20}>{totalPrice || '-'}</Text>
+                            <Text textColor={'gray.800'} fontSize={20}>{formatPrice(totalPrice) || '-'}</Text>
                         </Flex>
                         <Flex w={'100%'} justifyContent={'space-between'} alignItems={'center'}>
                             <Text textColor={'gray.600'} fontSize={18}>Discount</Text>
-                            <Text textColor={'gray.800'} fontSize={20}>{'-'}{discount || 0}</Text>
+                            <Text textColor={'gray.800'} fontSize={20}>{'- '}{formatPrice(discount)}</Text>
                         </Flex>
                     </VStack>
                     <Divider my={8}/>
                     <Flex alignItems={'center'} justifyContent={'space-between'} w={'100%'}>
                         <Text textColor={'gray.900'} fontSize={18}>Order Total</Text>
-                        <Text fontWeight={'medium'} textColor={'black'} fontSize={20}>{totalPrice} vnd</Text>
+                        <Text fontWeight={'medium'} textColor={'black'}
+                              fontSize={20}>{formatPrice(totalPrice)} vnd</Text>
                     </Flex>
                     <Divider my={8}/>
                     <Button onClick={placeOrder} w={'100%'} variant={'solid'} colorScheme={'teal'}>Place Order</Button>

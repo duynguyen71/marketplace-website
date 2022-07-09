@@ -21,7 +21,6 @@ const getCurrentUserDetail = async () => {
             "Authorization": `Bearer ${localStorage.getItem('access_token')}`
         }
     })
-
     return data;
 }
 
@@ -101,11 +100,11 @@ const getCurrentUserOrders = async (status) => {
     }
 
 }
-const saveFeedback = async (productId,rating, comment) => {
+const saveFeedback = async (productId, rating, comment) => {
     const url = `/api/v1/member/users/me/feedbacks`;
     try {
         const resp = await axiosClient.post(url, {
-            "productId" : productId,
+            "productId": productId,
             "comment": comment,
             "rating": rating,
         }, getHeaderConfig());
@@ -115,6 +114,11 @@ const saveFeedback = async (productId,rating, comment) => {
     } catch (e) {
         console.log('Failed to save feedback', e);
     }
+}
+const updateUserDetail = async (userDetail) => {
+    const url = `/api/v1/member/users/me`;
+    const resp = await axiosClient.post(url, {...userDetail}, getHeaderConfig());
+    return resp;
 }
 
 export default {
@@ -127,4 +131,5 @@ export default {
     placeOrder,
     getCurrentUserOrders,
     saveFeedback,
+    updateUserDetail
 }

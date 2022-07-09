@@ -12,8 +12,10 @@ import {
 } from "@chakra-ui/react";
 import {store} from "../../index";
 import {shoppingCartAction} from "../../actions/shoppingCartAction";
+import {formatPrice} from "./PriceTag";
 
-const CheckoutItem = (props) => {
+const CheckoutItem = ({...props}) => {
+    const {images = []} = props;
     return (
         <>
             <Flex justifyContent={'space-between'} alignItems={'center'} w={'100%'}>
@@ -21,17 +23,17 @@ const CheckoutItem = (props) => {
                     <AspectRatio w={100} ratio={1}>
                         <Image
                             borderRadius={'md'}
-                            src={'https://images.pexels.com/photos/277290/pexels-photo-277290.jpeg?cs=srgb&dl=pexels-pixabay-277290.jpg&fm=jpg'}
+                            src={(images != null && images[0] != undefined) ? ('http://localhost:8080/api/v1/public/files/' + images[0].image.name) : 'http://localhost:8080/api/v1/public/files/no-image'}
                             alt={'cart dstem'}/>
                     </AspectRatio>
 
                     <VStack align={'start'}>
                         <Text
-                            fontSize={20}
+                            fontSize={16}
                             textColor={
                                 'gray.600'
                             } fontWeight={'medium'}>{props.name || ''}</Text>
-                        <Text fontSize={15} color={'grey'}>Size : 20</Text>
+                        <Text fontSize={15} color={'grey'}>models</Text>
                         {/*<Text fontSize={15} textColor={'gray.600'}>Size : 20</Text>*/}
                     </VStack>
                 </HStack>
@@ -50,7 +52,8 @@ const CheckoutItem = (props) => {
                         <NumberDecrementStepper/>
                     </NumberInputStepper>
                 </NumberInput>
-                <Text textColor={'gray.700'} fontWeight={'medium'} fontSize={'x-large'}>{props.price * props.qty}</Text>
+                <Text textColor={'gray.700'} fontWeight={'medium'}
+                      fontSize={'x-large'}>{formatPrice(props.salesPrice * props.qty)}</Text>
             </Flex>
         </>
     );

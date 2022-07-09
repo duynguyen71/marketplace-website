@@ -22,12 +22,17 @@ import {shoppingCartAction} from "../../actions/shoppingCartAction";
 
 const HeaderWithBanner = () => {
     const [banner, setBanner] = useState(true);
+    const [total, setTotal] = useState(0);
     const {loggedIn} = useSelector(state => state.authenticateReducer);
-
-
     const cart = useSelector(state => state.shoppingCartReducer);
-
-
+    useEffect(() => {
+        console.log('cart item', cart);
+        setTotal(calcTotalItems());
+    }, [cart]);
+    const calcTotalItems = () => {
+        const totalPrice = cart.reduce((sum, {qty}) => sum + qty, 0);
+        return totalPrice;
+    }
     return (
         <>
             <Flex zIndex={999} direction={'column'} w={'100%'} position={'sticky'} top={0}>
@@ -127,7 +132,7 @@ const HeaderWithBanner = () => {
                                     justifySelf={'center'}
                                     justifyContent={'center'} alignItems={'center'} alignSelf={'center'}
                                     alignItems={'center'} textAlign={'center'}
-                                    justifyItems={'center'}>{cart != null ? cart.length : 0}</Text>
+                                    justifyItems={'center'}>{total}</Text>
                             </Box>
                         </Box>
                     </Flex>

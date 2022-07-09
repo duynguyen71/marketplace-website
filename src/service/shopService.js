@@ -48,10 +48,33 @@ const getProductDetail = async (productId) => {
     const data = await resp.data;
     return data;
 }
+
+function getHeaderConfig() {
+    return {
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem('access_token')}`,
+            "Content-Type": "application/json"
+        }
+    };
+}
+
+const updateShop = async (shop) => {
+    const url = '/api/v1/member/users/me/shop';
+    const resp = await axiosClient.post(url, {...shop}, getHeaderConfig())
+    return resp;
+}
+const getShopDetail = async (shopId) => {
+    const url = `/api/v1/public/shops/${shopId}`;
+    const resp = await axiosClient.get(url);
+    const data = await resp.data;
+    return data;
+}
 export const shopService = {
     getOrders: getOrders,
     getOrderStatus: getOrderStatus,
     getFeedbacks: getFeedbacks,
-    getProductDetail: getProductDetail
+    getProductDetail: getProductDetail,
+    getShopDetail: getShopDetail,
+    updateShop: updateShop,
 }
 

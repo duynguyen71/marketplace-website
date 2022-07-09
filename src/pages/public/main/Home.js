@@ -35,6 +35,7 @@ import ProductDetailPage from "../product/ProductDetailPage";
 import ShoppingCart from "../cart/ShoppingCart";
 import Login from "../login/Login";
 import Register from "../register/Register";
+import ShopDetail from "../shop/ShopDetail";
 
 const Home = () => {
     useEffect(() => {
@@ -50,8 +51,9 @@ const Home = () => {
                     {/*<Route path={'/product-details/:id'} component={props => <ProductDetailPage {...props}/>}/>*/}
                     <Route path={'/products/:category'} component={props => <ProductsPage {...props}/>}/>
                     <Route path={'/products'} component={props => <ProductsPage {...props}/>}/>
-                    <Route path={'/shop/:shopId/products/:productId'} component={props => <ProductDetailPage {...props}/>}/>
-
+                    <Route path={'/shop/:shopId/products/:productId'}
+                           component={props => <ProductDetailPage {...props}/>}/>
+                    <Route path={'/shop/:id'} component={ShopDetail}/>
                     <Route path={'/'} component={props => <HomeMain {...props}/>}/>
                 </Switch>
             </Box>
