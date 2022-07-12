@@ -1,10 +1,11 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {
+    Avatar,
     Box, Button, ButtonGroup,
     chakra, Divider,
     Flex,
     HStack,
-    Icon, Input,
+    Icon, Input, Select,
     Stack,
     Table,
     Tbody,
@@ -25,29 +26,47 @@ import {useGlobalFilter, usePagination, useSortBy, useTable} from "react-table";
 import {TriangleDownIcon, TriangleUpIcon} from "@chakra-ui/icons";
 import dateFormat, {masks} from "dateformat";
 import {FcNext, FcPrevious} from "react-icons/all";
+import {useHistory} from "react-router-dom";
+import RatingStarts from "../../../components/RatingStarts";
 
 const DashboardMain = () => {
-        const [orders, setOrders] = useState([])
+        const [orders, setOrders] = useState([]);
+        const [sortDirection, setSortDirection] = useState('DESC');
+        const history = useHistory();
         const columns = useMemo(() => ([
             {
                 Header: "ID",
                 Footer: "ID",
                 accessor: "id",
                 isNumeric: true,
-            }, {
+            },
+            {
                 Header: "Status",
                 Footer: "Status",
-                accessor: "status",
+                // accessor: "status",
                 isNumeric: true,
-                // accessor: (value) => (
-                //     <Text isTruncated noOfLines={1}>{value.items[0].product.name || ''}</Text>
-                // ),
+                accessor: (value) => (
+                    <Text
+                        onClick={() => history.push(`/dashboard/orders/${value.id}`)}
+                        isTruncated noOfLines={1}>{value.items[0].status || ''}</Text>
+                ),
             }, {
+                Header: "Product Name",
+                Footer: "Product Name",
+                // accessor: "status",
+                isNumeric: true,
+                accessor: (value) => (
+                    <Text
+                        onClick={() => history.push(`/dashboard/orders/${value.id}`)}
+                        isTruncated noOfLines={1}>{value.items[0].product.name || ''}</Text>
+                ),
+            },
+            {
                 Header: "Order Date",
                 Footer: "Order Data",
                 accessor: "createDate",
                 Cell: ({value}) => {
-                    return dateFormat(value, "dd/MM/yyyy");
+                    return dateFormat(value, "dd/mm/yyyy");
 
                 },
             },
@@ -55,7 +74,9 @@ const DashboardMain = () => {
                 Header: "Product",
                 Footer: "Product",
                 accessor: (value) => (
-                    <Text isTruncated noOfLines={1}>{`${value.items.length} Products `}</Text>
+                    <Text
+                        onClick={() => history.push(`/dashboard/orders/${value.id}`)}
+                        isTruncated noOfLines={1}>{`${value.items.length} Products `}</Text>
                 ),
             },
         ]), [setOrders]);
@@ -94,14 +115,18 @@ const DashboardMain = () => {
         const [feedbacks, setFeedbacks] = useState([]);
         useEffect(() => {
             document.title = 'Dashboard | Portal'
-            shopService.getOrders().then((data) => {
+            shopService.getOrders(sortDirection).then((data) => {
                 setOrders(data);
+                console.log('orders', data);
             })
-            shopService.getFeedbacks().then(data => {
-                setFeedbacks(data);
-                console.log('get feedbacks', data);
-            });
-        }, []);
+            if (feedbacks.length === 0) {
+                shopService.getFeedbacks().then(data => {
+                    setFeedbacks(data);
+                    console.log('get feedbacks', data);
+                });
+            }
+
+        }, [sortDirection,]);
 
         return (
             <>
@@ -111,9 +136,29 @@ const DashboardMain = () => {
                     {/*Section 2*/}
                     <Stack minH={'50vh'} maxH={'50vh'} pt={5} spacing={2} w={'100%'}
                            direction={{base: 'column', md: 'row'}}>
-                        <Box borderRadius={'md'} w={'100%'} p={{base: 1, md: 4}} bg={'white'} flex={7}>
+                        <Box overflowY={'scroll'} borderRadius={'md'} w={'100%'} p={{base: 1, md: 4}} bg={'white'} flex={7}>
                             <VStack align={'start'} w={'100%'}>
-                                <Text> Todo List</Text>
+                                {feedbacks.map((item, i) => (
+                                    <Flex key={item.id || i} w={'100%'} direction={'column'} justifyContent={'start'}
+                                          py={2}>
+                                        <Flex alignItems={'start'}>
+                                            <Avatar size='md' name='Ryan Florence'
+                                                // src='https://bit.ly/ryan-florence'
+                                                    src={(item.user.avt != null && item.user.avt != undefined) ? ('http://localhost:8080/api/v1/public/files/' + item.user.avt) :
+                                                        null}
+
+                                            />
+                                            <Flex w={'100%'} px={2} direction={'column'}>
+                                                <Text fontSize={12}
+                                                      fontWeight={'normal'}>{item.user.username || item.user.email || ''}</Text>
+                                                <Text fontSize={14} fontWeight={'medium'}>{item.comment}</Text>
+                                                <RatingStarts starts={item.rating} onClick={() => {
+                                                }}/>
+                                            </Flex>
+                                        </Flex>
+                                        <Divider pt={2} w={'30%'}/>
+                                    </Flex>
+                                ))}
                             </VStack>
                         </Box>
                         {/*FEEDBACK CARDS*/}
@@ -135,7 +180,22 @@ const DashboardMain = () => {
                     <Box bg={'white'} mt={5}>
                         <BasicOrderStatusStatistics/>
                     </Box>
+
                     <Flex direction={'column'} minH={'100vh'} bg={'white'} mt={5}>
+                        <Box bg={'white'} px={4} pt={4} alignSelf={'end'}>
+                            <Select
+                                size={'sm'}
+                                onChange={(e) => {
+                                    setSortDirection(e.target.value);
+                                    console.log(e.target.value)
+                                }}
+                                defaultValue={'DESC'}
+                            >
+                                <option value='DESC'>Newest</option>
+                                <option value='ASC'>Oldest</option>
+
+                            </Select>
+                        </Box>
                         <Flex direction={'column'} p={4}>
                             <Flex w={"100%"} justifyContent={"space-between"}>
                                 <Text fontSize={"x-large"}>

@@ -29,6 +29,9 @@ const PrivateRoutes = ({children, ...rest}) => {
                    if (user != null) {
                        if (hasSellerRole()) {
                            return children;
+                       } else {
+
+                           return <Redirect to={'/shop/register'}/>
                        }
                    } else {
                        applicationAction.setRedirectUrl('/dashboard');

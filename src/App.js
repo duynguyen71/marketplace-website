@@ -15,13 +15,13 @@ import {authAction} from "./actions/auth.action";
 import PrivateMemberRoute from "./PrivateMemberRoute";
 import Purchase from "./pages/member/purchase/Purchase";
 import MemberRoutes from "./pages/member/MemberRoutes";
+import ShopRegisterPage from "./pages/public/shop-register/ShopRegsiterPage";
 
 function App() {
 
     useEffect(async () => {
         await authAction.getUserDetail();
     })
-
 
     return (
         <>
@@ -36,6 +36,8 @@ function App() {
                 <Route path='/login' component={Login}/>
                 <Route path='/verification' component={VerificationPage}/>
                 <Route path='/register' component={Register}/>
+                <Route path='/shop/register' component={ShopRegisterPage}/>
+
                 <Route path='/' component={Home}/>
             </Switch>
         </>

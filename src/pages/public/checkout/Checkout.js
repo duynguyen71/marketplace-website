@@ -307,7 +307,7 @@ const Checkout = () => {
                     <Flex alignItems={'center'} justifyContent={'space-between'} w={'100%'}>
                         <Text textColor={'gray.900'} fontSize={18}>Order Total</Text>
                         <Text fontWeight={'medium'} textColor={'black'}
-                              fontSize={20}>{formatPrice(totalPrice)} vnd</Text>
+                              fontSize={20}>{formatPrice(totalPrice)}</Text>
                     </Flex>
                     <Divider my={8}/>
                     <Button onClick={placeOrder} w={'100%'} variant={'solid'} colorScheme={'teal'}>Place Order</Button>

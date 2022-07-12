@@ -63,16 +63,7 @@ const Product = () => {
                     <Flex alignItems={'start'} justifyContent={'start'}>
                         <Flex direction={'column'} alignItems={'start'} justifyContent={'start'}>
                             <Text fontWeight={'medium'} maxW={'100px'} isTruncated>{d.name}</Text>
-                            {/*<Flex alignItems={'start'} justifyContent={'start'} spacing={2} align={"start"}>*/}
-                            {/*    <Flex justifyContent={'start'} alignItem={'center'}>*/}
-                            {/*        /!*<Icon color={"blue"} as={AiFillLike}/>*!/*/}
-                            {/*        <Text>100</Text>*/}
-                            {/*    </Flex>*/}
-                            {/*    <Flex justifyContent={'start'} alignItems={'center'}>*/}
-                            {/*        /!*<Icon color={"blue"} as={AiFillEye}/>*!/*/}
-                            {/*        <Text>100</Text>*/}
-                            {/*    </Flex>*/}
-                            {/*</Flex>*/}
+
                         </Flex>
                     </Flex>
                 ),

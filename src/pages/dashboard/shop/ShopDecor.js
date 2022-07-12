@@ -29,6 +29,7 @@ import {
 } from '@chakra-ui/react';
 import {isImage} from "../../../utities/ValidationUtil";
 import productService from "../../../service/product.service";
+import LoadingWidget from "../../../components/LoadingWidget";
 
 const ShopDecor = () => {
     const history = useHistory();
@@ -37,13 +38,14 @@ const ShopDecor = () => {
     const {user} = useSelector((state) => state.authenticateReducer, () => true);
     const [selectedAvtFile, setSelectedAvtFile] = useState(null);
     const [selectedBgFile, setSelectedBgFile] = useState(null);
+    const [isLoading, setLoading] = useState(false);
     useEffect(() => {
-        console.log('get shop detail')
         shopService.getShopDetail(user.shop.id).then(data => setShop({...data}));
     }, [])
 
 
     const handleUpdate = async () => {
+        setLoading(true);
         let shopTemp = {...shop};
         if (selectedAvtFile != null) {
             const resp = await productService.saveFile(selectedAvtFile);
@@ -64,6 +66,8 @@ const ShopDecor = () => {
         }
         const data = await shopService.updateShop(shopTemp);
         onClose();
+        setLoading(false);
+
     }
     const getPath = (file) => {
         if (file) {
@@ -199,6 +203,8 @@ const ShopDecor = () => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
+            <LoadingWidget isLoading={isLoading}/>
         </Flex>
     );
 

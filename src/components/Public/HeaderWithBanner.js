@@ -62,9 +62,9 @@ const HeaderWithBanner = () => {
                         >
                             <Text
                                 onClick={() => history.push('/dashboard')}
-                            >Kenh nguoi ban| </Text>
-                            <Text>Tai ung dung| </Text>
-                            <Text>Ket noi| </Text>
+                            >Seller Center| </Text>
+                            <Text>Download| </Text>
+                            <Text>Connect| </Text>
                         </HStack>
                         <HStack color={'white'}
                         >

@@ -18,6 +18,7 @@ import CreateProductDetail from "../create_product/CreateProductDetail";
 import EditProductPage from "../edit-product/EditProductPage";
 import {useGlobalFilter, usePagination, useSortBy, useTable} from "react-table";
 import ShopDecor from "../shop/ShopDecor";
+import OrderItemDetailPage from "../order/OrderItemDetailPage";
 
 const Dashboard = () => {
     useEffect(() => {
@@ -59,7 +60,11 @@ const Dashboard = () => {
                         exact
                         path={"/dashboard"}
                         component={(props) => <DashboardMain {...props} />}
-                    />
+                    /> <Route
+                    exact
+                    path={"/dashboard/orders/:id"}
+                    component={(props) => <OrderItemDetailPage {...props} />}
+                />
                 </Switch>
             </SidebarWithHeader>
         </>

@@ -21,6 +21,7 @@ const SavedImageSelector = ({index, handleSelectedImage, image}) => {
     useEffect(() => {
     }, [setSelectFile]);
 
+    console.log(image);
     return (
         <>
             <Box
@@ -56,7 +57,7 @@ const SavedImageSelector = ({index, handleSelectedImage, image}) => {
                                     boxSize='100px'
                                     objectFit='cover'
                                     alt={image.name || ''}
-                                    src={`http://localhost:8080/api/v1/public/files/ducati_hypermotard_950_concept_2019_5k_2-1650093980872`}
+                                    src={`http://localhost:8080/api/v1/public/files/${image.image.name}`}
                                 />
                             </AspectRatio>
                         </Box>

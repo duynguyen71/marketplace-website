@@ -89,7 +89,6 @@ const CreateProductDetail = () => {
         (state) => state.productNewReducer.selectedImagePaths
     );
     const handleSaveImage = async (file, index) => {
-        console.log('upload image');
         try {
             const resp = await productService.saveFile(file);
             setImages(p => [...p, resp.data.id]);
@@ -319,7 +318,7 @@ const CreateProductDetail = () => {
                     </Text>
 
                     <VStack align={"start"}>
-                        <Text>Hinh anh san pham</Text>
+                        <Text>Product Images</Text>
                         <Wrap>
                             {[1, 1, 1, 1, 1, 1, 1, 1].map((item, i) => (
                                 <ImgSelector
@@ -340,7 +339,7 @@ const CreateProductDetail = () => {
                     >
                         <Flex alignItems={"start"} w={"100%"}>
                             {/* PRODUCT NAME */}
-                            <Text flex={2}>Ten san pham</Text>
+                            <Text flex={2}>Product Name</Text>
                             <FormControl flex={12}>
                                 <Input
                                     ref={productNameRef}
@@ -428,8 +427,7 @@ const CreateProductDetail = () => {
                         Product Detail
                     </Text>
                     <Text>
-                        Hoàn thành: 1 / 15 Điền thông tin thuộc tính để tăng mức độ hiển thị
-                        cho sản phẩm Xem hướng dẫn bổ sung thuộc tính.
+                        Fill in attribute information to increase product visibility See the guide to adding attributes.
                     </Text>
                     <SimpleGrid spacing={5} columns={2} minChildWidth={100}>
                         <GridItem py={5} maxW={300}>
@@ -455,7 +453,7 @@ const CreateProductDetail = () => {
                     direction={"column"}
                 >
                     <Text letterSpacing="2" fontWeight="medium" fontSize="20px">
-                        Thong tin ban hang
+                        Product Models
                     </Text>
                     {(product.variants && product.variants.length > 0 && product.variants[0].name) ? (
                         <Flex py={3} alignItems={'center'} justifyContent={'start'}>
@@ -596,7 +594,7 @@ const CreateProductDetail = () => {
                         <Flex py={2} key={variantIndex} direction={"column"}>
                             <Flex alignItems={"center"} align={"start"}>
                                 <Text maxW={100} minW={100}>
-                                    Ten nhom phan loai
+                                    Variant Name
                                 </Text>
                                 <FormControl maxW="300">
                                     <Input
@@ -653,7 +651,7 @@ const CreateProductDetail = () => {
                             </Flex>
                             <Box h={1}/>
                             <HStack mt={2} align={"start"} spacing={0}>
-                                <Text minW={100}>Ten phan loai</Text>
+                                <Text minW={100}>Variant Value</Text>
                                 <VStack p={0} m={0} align="start">
                                     {variant.options &&
                                     variant.options.map((option, optionIndex) => (
@@ -790,7 +788,7 @@ const CreateProductDetail = () => {
                 </Flex>
                 <Flex p={5} direction={"column"} bg={"white"} w={"100%"}>
                     <HStack py={5} spacing={2}>
-                        <Text>Meo thiet lap phan loai hang</Text>
+                        <Text>Quick Edit</Text>
                         <InputGroup size={"sm"}>
                             <Input
                                 value={variantOption.price || ""}

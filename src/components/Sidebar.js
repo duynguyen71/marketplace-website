@@ -186,7 +186,6 @@ const Sidebar = () => {
                             <Flex flexDir="column"
                                 // ml={4}
                                   display={navSize === "small" ? "none" : "flex"}>
-                                <Heading as="h3" size="sm">Sylwia Weller</Heading>
                                 <Text color="gray">Admin</Text>
                             </Flex>
                         </Flex>

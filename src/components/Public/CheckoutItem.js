@@ -24,7 +24,7 @@ const CheckoutItem = ({...props}) => {
                         <Image
                             borderRadius={'md'}
                             src={(images != null && images[0] != undefined) ? ('http://localhost:8080/api/v1/public/files/' + images[0].image.name) : 'http://localhost:8080/api/v1/public/files/no-image'}
-                            alt={'cart dstem'}/>
+                            alt={'cart item image'}/>
                     </AspectRatio>
 
                     <VStack align={'start'}>
