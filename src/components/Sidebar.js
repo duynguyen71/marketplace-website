@@ -44,33 +44,20 @@ const Sidebar = () => {
         {
             icon: FiCalendar, title: "Product", description: "T", active: false, children: [
                 {
-                    title: 'All Products',
+                    title: 'All Product',
                     path: '/dashboard/products'
                 },
                 {
-                    title: 'New Products',
+                    title: 'New Product',
                     path: '/dashboard/product-new/category'
                 },
-                {
-                    title: 'All Products',
-                    path: '/dashboard/products'
-                },
-
             ]
         },
         {
             icon: FiCalendar, title: "Order", description: "This is the description for the dashboard.", active: false,
             children: [
                 {
-                    title: 'All Products',
-                    path: '/dashboard/products'
-                },
-                {
-                    title: 'New Products',
-                    path: '/dashboard/product-new/category'
-                },
-                {
-                    title: 'All Products',
+                    title: 'All Order',
                     path: '/dashboard/products'
                 },
 
